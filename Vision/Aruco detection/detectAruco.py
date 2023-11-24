@@ -3,16 +3,21 @@ from cv2 import aruco
 import numpy as np
 
 marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
-
+#BLUR_INTENSITY = 1
 #= aruco.DetectorParameters_create()
 param_markers  = cv.aruco.DetectorParameters()
 
+CAMERA_WIDTH = 1280
+CAMERA_HEIGHT = 720
+
 cap = cv.VideoCapture(0)
-cap.set(3, 520)
-cap.set(4, 480)
+cap.set(cv.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
+cap.set(cv.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
+
 cv.imshow("test",cap.read()[1])
 while True:
     ret, frame = cap.read()
+   
     if not ret:
         break
     gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -23,7 +28,7 @@ while True:
     if marker_corners:
         for ids, corners in zip(marker_IDs, marker_corners):
             cv.polylines(
-                frame, [corners.astype(np.int32)], True, (0, 255, 255), 4, cv.LINE_AA
+                frame, [corners.astype(np.int32)], True, (0, 255, 255), 1, cv.LINE_AA
             )
             corners = corners.reshape(4, 2)
             corners = corners.astype(int)
@@ -36,13 +41,15 @@ while True:
                 f"id: {ids[0]}",
                 top_right,
                 cv.FONT_HERSHEY_PLAIN,
-                1.3,
+                1,
                 (200, 100, 0),
-                2,
+                1   ,
                 cv.LINE_AA,
             )
             # print(ids, "  ", corners)
-    cv.imshow("frame", frame)
+        
+    frame_resized = cv.resize(frame, (1040, 960))  # Resize to double the capture resolution
+    cv.imshow("frame", frame_resized)
     key = cv.waitKey(1)
     if key == ord("q"):
         break
