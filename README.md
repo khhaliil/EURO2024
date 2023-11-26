@@ -1,12 +1,11 @@
 
-
 # EURO2024
 
-Welcome to the Project Name repository! This document provides guidelines on how to contribute to the different directories of the project.
+Mar7bé bikom lel repository mta3 Project EURO2024! Hetha el document besh y'awnek kifech ta3mel contribution lel different directories mta3 el project.
 
-## Repository Structure
+## Structure mta3 el Repository
 
-The repository is structured into various directories, each corresponding to a specific aspect of the project:
+El repository m3abbi b'bezdet directories, kol wa7ed menhom mechi ykoun corresponding lel jihet spécifique mta3 el project:
 
 - Communication
 - Documentation
@@ -16,104 +15,110 @@ The repository is structured into various directories, each corresponding to a s
 - Tools
 - Vision
 
-Each directory has a dedicated team responsible for its content.
+Kol directory andha el team mta3ha li mas2oul 3liha.
 
-## Contribution Guidelines
+## Kifech Ta3mel Contribution
 
-To contribute to this repository, please follow these steps:
+Besh tcontribute lel repository, please suivez hethom lé étapes:
 
-### Setting Up Your Workspace
+### Kifech Ta3mel Setup l Workspace mta3ek
 
-1. **Clone the Repository**:
-   - Clone the repository to your local machine using:
+1. **Clone el Repository**:
+   - Clone el repository lel machine mta3ek b'using:
      ```sh
      git clone https://github.com/your-org/EURO204.git
      ```
-   - Navigate into the cloned directory:
+   - Emchi lel directory eli clonitou:
      ```sh
      cd repo-name
      ```
 
-### Making Contributions
+### Kifech Ta3mel Contributions
 
-2. **Create a New Branch for Your Work**:
-   - Before making any changes, create a new branch from `main`:
+2. **Create a New Branch lel khedma mta3ek**:
+   - Avant ma ta3mel ay changes, create a new branch men `main`:
      ```sh
      git checkout -b your-feature-branch
      ```
-   - Replace `your-feature-branch` with a descriptive name for your branch (e.g., `vision-enhancements`).
+   - Badel `your-feature-branch` b'esm descriptive lel branch mta3ek (par exemple, `vision-enhancements`).
 
-3. **Making Changes**:
-   - Make your changes within the respective directory you're responsible for.
-   - Ensure you follow the README template provided for each directory.
+3. **A3mel el Changes mta3ek**:
+   - A3mel el changes mté3ek f'dakhal el directory li inti mas2oul 3liha.
+   - T'hebb t'koun sur belli suiveit el README template li mawjoud lel kol directory.
 
-4. **Committing Changes**:
-   - After making changes, stage your changes for commit:
+4. **Committing el Changes**:
+   - Après ma ta3mel el changes, stage your changes lel commit:
      ```sh
      git add .
      ```
-   - Commit your changes with a descriptive message:
+   - Commit el changes mta3ek b'message descriptive:
      ```sh
      git commit -m "Add a concise, descriptive comment about your changes"
      ```
 
-5. **Pushing Changes**:
-   - Push the branch to the remote repository:
+5. **Pushing el Changes**:
+   - Push el branch lel remote repository:
      ```sh
      git push origin your-feature-branch
      ```
 
-### Creating a Pull Request
+### Kifech Ta3mel Pull Request
 
-6. **Open a Pull Request (PR)**:
-   - Go to the repository on GitHub.
-   - Click on the "Pull request" button.
-   - Select your branch and provide a clear description of the changes.
+6. **Emchi lel Pull Request (PR)**:
+   - Emchi lel repository 3la GitHub.
+   - Clique 3la "Pull request" button.
+   - Chouz el branch mta3ek w provide a clear description lel changes.
 
 7. **Code Review**:
-   - Request a review from a teammate or a maintainer.
-   - Address any feedback and make necessary changes.
+   - Talab review men teammate ou min maintainer.
+   - Jaweb 3la ay feedback w dir ay changes necessary.
 
-8. **Merging to Main**:
-   - Once the PR is approved, it can be merged into the `main` branch.
+8. **Merging lel Main**:
+   - Lamma el PR ti7dher, it can be merged into el `main` branch.
 
-### Pulling Changes
+### Kifech Tjadded Changes
 
 9. **Stay Updated**:
-   - Regularly pull changes from the `main` branch to stay updated:
+   - Besh t'koun daima updated, regularly pull changes men el `main` branch:
      ```sh
      git checkout main
      git pull origin main
      ```
 
+# README Template lel Directories
 
-# README Template for Directories
-
-Each directory should contain a README with the following structure:
+Kol directory lazmha tkoun fih README b'hal structure:
 
 ```markdown
-# Directory Name
+# Essem el Directory
 
 ## Overview
 
-Brief description of what this directory contains and its purpose in the project.
+Description breve kifech hetha el directory fih o shnuwa purpose mta3ou fel project.
 
 ## Structure
 
-- `file_or_subdirectory_name` - Description of contents or subdirectory.
+- `essem_file_ou_subdirectory` - Description lel contenu ou subdirectory.
 
 ## Setup and Installation
 
-Any required setup steps or installation instructions specific to this directory.
+Ay setup steps ou instructions d'installation mte3bin spécifiquement lel directory hetha.
 
 ## Usage
 
-Instructions on how to use the modules or tools within this directory.
+Instructions kifech tista3mel el modules ou tools eli fih el directory.
 
 ## Contributing
 
-Specific guidelines for contributing to this directory, if any.
+Guidelines spécifiques lel contribution lel directory hetha, ila kayen.
 
 ## Contact
 
-Who to contact for queries related to this directory.
+Mén contacti besh tassa2el 3la queries related lel directory.
+```
+
+Copy w paste hetha el template f'koll README.md lel kol directory w updateih b'el information relevant.
+
+--- 
+
+As before, replace "your-org/EURO204.git" and "repo-name" with your actual organization and repository names, and update any other placeholders as necessary.
