@@ -26,7 +26,7 @@ Besh tcontribute lel repository, please suivez hethom lé étapes:
 1. **Clone el Repository**:
    - Clone el repository lel machine mta3ek b'using:
      ```sh
-     git clone https://github.com/your-org/EURO204.git
+     git clone https://github.com/khhaliil/EURO204.git
      ```
    - Emchi lel directory eli clonitou:
      ```sh
