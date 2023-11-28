@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+
+	<!--define arguments-->
+	<arg name ="world" 		default="empty"/>
+	<arg name ="paused" 		default="false"/>
+	<arg name ="use_sim_time" 	default="true"/>
+	<arg name ="gui" 		default="true"/>
+	<arg name ="headless" 		default="false"/>
+	<arg name ="debug" 		default="false"/>
+	
+	<!--load the world env-->
+	<include file="~/EURO2024/Tools/Simulation_test_Gazebo_/src/test_simu/simu_packs/launch/empty_world.launch">
+		<arg name="world name"		value="$(find simu_packs)/worlds/diff_drive.world"/>
+		<arg name="paused"		value="$(arg paused)"/>
+		<arg name="use_sim_time"		value="$(arg use_sim_time)"/>
+		<arg name="gui"		value="$(arg gui)"/>
+		<arg name="headless"		value="$(headless)"/>
+		<arg name="debug"		value="$(debug)"/>
+		
+	</include>
+</launch>
