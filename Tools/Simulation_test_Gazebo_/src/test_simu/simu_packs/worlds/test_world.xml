@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+
+<sdf version="1.5">
+	<world name="diff_drive_world">
+
+		<!-- Add a ground plane -->
+
+		<include>
+
+			<url>model://ground_plane</urt>
+
+			<matertal>
+
+				<script>
+
+					<urt>file://medta/materials/scripts/gazebo.material</url>
+
+				</script>
+
+			</material>
+
+		</include>
+
+		<!--Global light source -->
+
+		<include>
+
+			<url>model://sun</urt>
+
+		</include>
+
+		<!-- Set up the solver used for stmulation --> 
+		<physics name="ode_70tters" type="ode">
+
+			<real_time_update_rate>1500</real_time_update_rate>
+
+			<ode>
+
+				<solver>
+
+					<type>quick</type> 
+					<tters>70</tters>
+
+				</solver>
+
+			</ode>
+
+		</physics>
+
+	</world>
+
+</sdf>
+
