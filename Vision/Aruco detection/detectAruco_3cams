@@ -1,0 +1,105 @@
+import cv2 as cv
+import numpy as np
+from cv2 import aruco
+
+# Initialize ArUco marker parameters
+marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
+param_markers = cv.aruco.DetectorParameters()
+
+# Camera settings
+CAMERA_WIDTH = 1280
+CAMERA_HEIGHT = 720
+NUM_CAMERAS = 3
+
+def stackImages(scale, imgArray):
+    rows = len(imgArray)
+    cols = len(imgArray[0])
+    rowsAvailable = isinstance(imgArray[0], list)
+    width = imgArray[0][0].shape[1]
+    height = imgArray[0][0].shape[0]
+    if rowsAvailable:
+        for x in range(0, rows):
+            for y in range(0, cols):
+                if imgArray[x][y].shape[:2] == imgArray[0][0].shape[:2]:
+                    imgArray[x][y] = cv.resize(
+                        imgArray[x][y], (0, 0), None, scale, scale)
+                else:
+                    imgArray[x][y] = cv.resize(
+                        imgArray[x][y], (imgArray[0][0].shape[1], imgArray[0][0].shape[0]), None, scale, scale)
+                if len(imgArray[x][y].shape) == 2:
+                    imgArray[x][y] = cv.cvtColor(
+                        imgArray[x][y], cv.COLOR_GRAY2BGR)
+        imageBlank = np.zeros((height, width, 3), np.uint8)
+        hor = [imageBlank]*rows
+        hor_con = [imageBlank]*rows
+        for x in range(0, rows):
+            hor[x] = np.hstack(imgArray[x])
+        ver = np.vstack(hor)
+    else:
+        for x in range(0, rows):
+            if imgArray[x].shape[:2] == imgArray[0].shape[:2]:
+                imgArray[x] = cv.resize(
+                    imgArray[x], (0, 0), None, scale, scale)
+            else:
+                imgArray[x] = cv.resize(
+                    imgArray[x], (imgArray[0].shape[1], imgArray[0].shape[0]), None, scale, scale)
+            if len(imgArray[x].shape) == 2:
+                imgArray[x] = cv.cvtColor(imgArray[x], cv2.COLOR_GRAY2BGR)
+        hor = np.hstack(imgArray)
+        ver = hor
+    return ver
+
+
+# Function to initialize a camera
+def init_camera(index, width=CAMERA_WIDTH, height=CAMERA_HEIGHT):
+    cap = cv.VideoCapture(index)
+    # cap.set(cv.CAP_PROP_FRAME_WIDTH, width)
+    # cap.set(cv.CAP_PROP_FRAME_HEIGHT, height)
+    return cap
+
+# Function to process a frame
+def process_frame(cap):
+    ret, frame = cap.read()
+    if not ret:
+        return None
+
+    # Convert to grayscale and detect ArUco markers
+    gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    marker_corners, marker_IDs, _ = aruco.detectMarkers(gray_frame, marker_dict, parameters=param_markers)
+
+    # Draw markers and IDs on the frame
+    if marker_corners:
+        aruco.drawDetectedMarkers(frame, marker_corners, marker_IDs)
+
+    return frame
+
+# Main function to run the application
+def run_app():
+    # Initialize cameras
+    caps = [init_camera(i, CAMERA_WIDTH, CAMERA_HEIGHT) for i in range(NUM_CAMERAS)]
+
+    try:
+        while True:
+            frames = []
+            for cap in caps:
+                frame = process_frame(cap)
+                if frame is not None:
+                    frames.append(frame)
+            
+            # Check if we have frames from all cameras
+            if len(frames) == NUM_CAMERAS:
+                # Stack and display images in one window
+                stacked_frames = stackImages(0.8, [frames])  # Adjust the scale as needed
+                cv.imshow("Stacked Cameras", stacked_frames)
+
+            # Break the loop with 'q'
+            if cv.waitKey(1) & 0xFF == ord('q'):
+                break
+    finally:
+        # Release all camera captures and close windows
+        for cap in caps:
+            cap.release()
+        cv.destroyAllWindows()
+
+# Run the application
+run_app()
