@@ -7,7 +7,7 @@ marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 param_markers = cv.aruco.DetectorParameters()
 
 # Camera settings
-CAMERA_WIDTH = 1280
+CAMERA_WIDTH = 1080
 CAMERA_HEIGHT = 720
 NUM_CAMERAS = 3
 
@@ -44,16 +44,30 @@ def stackImages(scale, imgArray):
                 imgArray[x] = cv.resize(
                     imgArray[x], (imgArray[0].shape[1], imgArray[0].shape[0]), None, scale, scale)
             if len(imgArray[x].shape) == 2:
-                imgArray[x] = cv.cvtColor(imgArray[x], cv2.COLOR_GRAY2BGR)
+                imgArray[x] = cv.cvtColor(imgArray[x], cv.COLOR_GRAY2BGR)
         hor = np.hstack(imgArray)
         ver = hor
     return ver
 
+def denoise_frame(frame, strength=4):
+    """
+    Apply denoising to the given frame.
+    :param frame: Input frame to be denoised
+    :param strength: Denoising strength, higher values remove more noise but can remove image details
+    :return: Denoised frame
+    """
+    # Check if the frame is valid
+    if frame is None:
+        return None
 
+    # Apply fast Non-Local Means Denoising
+    denoised_frame = cv.fastNlMeansDenoisingColored(frame, None, strength, strength, 7, 21)
+    return denoised_frame
 # Function to initialize a camera
 def init_camera(index, width=CAMERA_WIDTH, height=CAMERA_HEIGHT):
     cap = cv.VideoCapture(index)
-    # cap.set(cv.CAP_PROP_FRAME_WIDTH, width)
+    # 1080p
+    #cap.set(cv.CAP_PROP_FRAME_WIDTH, width)
     # cap.set(cv.CAP_PROP_FRAME_HEIGHT, height)
     return cap
 
@@ -62,7 +76,7 @@ def process_frame(cap):
     ret, frame = cap.read()
     if not ret:
         return None
-
+    frame = denoise_frame(frame)
     # Convert to grayscale and detect ArUco markers
     gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     marker_corners, marker_IDs, _ = aruco.detectMarkers(gray_frame, marker_dict, parameters=param_markers)
