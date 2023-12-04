@@ -1,0 +1,132 @@
+import cv2 as cv
+import numpy as np
+from cv2 import aruco
+
+# Initialize ArUco marker parameters
+marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
+param_markers = cv.aruco.DetectorParameters()
+
+# Global variables for mouse clicks and camera index
+circles = [np.zeros((4, 2), np.int_) for _ in range(3)]  # Separate points for each camera
+counter = 0
+current_camera_index = 0  # Start with the first camera
+NUM_CAMERAS = 3
+
+def denoise_frame(frame, strength=3):
+    """
+    Apply denoising to the given frame.
+    :param frame: Input frame to be denoised
+    :param strength: Denoising strength, higher values remove more noise but can remove image details
+    :return: Denoised frame
+    """
+    # Check if the frame is valid
+    if frame is None:
+        return None
+
+    # Apply fast Non-Local Means Denoising
+    denoised_frame = cv.fastNlMeansDenoisingColored(frame, None, strength, strength, 7, 21)
+    return denoised_frame
+
+# Function to get camera resolution
+def get_camera_resolution(index=0):
+    cap = cv.VideoCapture(index)
+    if not cap.isOpened():
+        print(f"Error: Camera {index} not accessible.")
+        return None, None
+    width = int(cap.get(cv.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv.CAP_PROP_FRAME_HEIGHT))
+    cap.release()
+    return width, height
+
+# Function to handle mouse clicks
+def MouseClick(event, x, y, flags, params):
+    global counter, circles
+    if event == cv.EVENT_LBUTTONDOWN and counter < 4:
+        circles[current_camera_index][counter] = x, y
+        print(f"Camera {current_camera_index+1} Point {counter+1}: ({x}, {y})")
+        counter += 1
+        if counter == 4:
+            switch_to_next_camera()
+
+# Function to switch to the next camera for point capturing
+def switch_to_next_camera():
+    global current_camera_index, counter
+    current_camera_index = (current_camera_index + 1) % NUM_CAMERAS
+    counter = 0  # Reset counter for the next camera
+
+# Function to initialize a camera
+def init_camera(index):
+    width, height = get_camera_resolution(index)
+    if width is None or height is None:
+        return None
+    cap = cv.VideoCapture(index)
+    cap.set(cv.CAP_PROP_FRAME_WIDTH, width)
+    cap.set(cv.CAP_PROP_FRAME_HEIGHT, height)
+    return cap
+
+# Function to apply perspective transformation
+def apply_perspective_transform(frame, points):
+    if len(points) < 4:
+        return frame  # Not enough points for transformqation
+    width, height = frame.shape[1], frame.shape[0]
+    pts1 = np.float32([points[0], points[1], points[2], points[3]])
+    pts2 = np.float32([[0, 0], [width, 0], [0, height], [width, height]])
+    matrix = cv.getPerspectiveTransform(pts1, pts2)
+    transformed_frame = cv.warpPerspective(frame, matrix, (width, height))
+    return transformed_frame
+
+# Function to process a frame
+def process_frame(cap, camera_index):
+    ret, frame = cap.read()
+    if not ret:
+        return None
+    frame = denoise_frame(frame)
+    gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    marker_corners, marker_IDs, _ = aruco.detectMarkers(gray_frame, marker_dict, parameters=param_markers)
+
+    # Draw markers and IDs on the frame
+    if marker_corners:
+        aruco.drawDetectedMarkers(frame, marker_corners, marker_IDs)
+    for pt in circles[camera_index]:
+        if not np.all(pt == 0):
+            cv.circle(frame, (pt[0], pt[1]), 2, (0, 255, 0), -1)  # Green circle
+
+    # Check if points for this camera are captured and apply transformation
+    if np.all(circles[camera_index] != 0):
+        frame = apply_perspective_transform(frame, circles[camera_index])
+    return frame
+
+# Main function to run the application
+def run_app():
+    global current_camera_index
+    NUM_CAMERAS = 3  # Number of cameras
+    caps = [init_camera(i) for i in range(NUM_CAMERAS)]
+
+    try:
+        while True:
+            frames = []
+            for i, cap in enumerate(caps):
+                if cap is not None:
+                    frame = process_frame(cap, i)
+                    if frame is not None:
+                        transformed_window_name = f"Transformed Camera {i+1}"
+                        original_window_name = f"Original Camera {i+1}"
+                        cv.imshow(original_window_name, frame)
+                        if np.all(circles[i] != 0):
+                            transformed_frame = apply_perspective_transform(frame, circles[i])
+                            cv.imshow(transformed_window_name, transformed_frame)
+                        if i == current_camera_index:
+                            # Set mouse callback only for the current camera
+                            cv.setMouseCallback(original_window_name, MouseClick)
+
+            key = cv.waitKey(1)
+            if key & 0xFF == ord('q'):
+                break
+    finally:
+        for cap in caps:
+            if cap is not None:
+                cap.release()
+        cv.destroyAllWindows()
+
+# Run the application
+run_app()

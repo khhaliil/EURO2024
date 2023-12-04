@@ -7,12 +7,12 @@ marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 #= aruco.DetectorParameters_create()
 param_markers  = cv.aruco.DetectorParameters()
 
-CAMERA_WIDTH = 1280
-CAMERA_HEIGHT = 720
+# CAMERA_WIDTH = 1280
+# CAMERA_HEIGHT = 720
 
-cap = cv.VideoCapture(0)
-cap.set(cv.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
-cap.set(cv.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
+cap = cv.VideoCapture(2)
+# cap.set(cv.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
+# cap.set(cv.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
 
 cv.imshow("test",cap.read()[1])
 while True:
