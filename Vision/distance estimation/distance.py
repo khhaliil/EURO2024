@@ -2,7 +2,7 @@ import cv2 as cv
 from cv2 import aruco
 import numpy as np
 
-calib_data_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\images\MultiMatrix.npz"
+calib_data_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\Data_images\MultiMatrix.npz"
 
 calib_data = np.load(calib_data_path)
 print(calib_data.files)
@@ -18,13 +18,32 @@ marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 
 param_markers = aruco.DetectorParameters()
 
-cap = cv.VideoCapture(1)
+cap = cv.VideoCapture(0)
+cap.set(10, 50)
+
+
+def denoise_frame(frame, strength=4):
+    """
+    Apply denoising to the given frame.
+    :param frame: Input frame to be denoised
+    :param strength: Denoising strength, higher values remove more noise but can remove image details
+    :return: Denoised frame
+    """
+    # Check if the frame is valid
+    if frame is None:
+        return None
+
+    # Apply fast Non-Local Means Denoising
+    denoised_frame = cv.fastNlMeansDenoisingColored(frame, None, strength, strength, 7, 21)
+    return denoised_frame
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
+    frame=denoise_frame(frame)
     gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    
     marker_corners, marker_IDs, reject = aruco.detectMarkers(
         gray_frame, marker_dict, parameters=param_markers
     )
