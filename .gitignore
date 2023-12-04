@@ -49,4 +49,4 @@ po/*~
 rsconnect/
 
 *.png
-Vision\Euro_venv
+Vision\Euro_venv\*
