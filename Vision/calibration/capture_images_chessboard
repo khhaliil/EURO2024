@@ -6,7 +6,7 @@ CHESS_BOARD_DIM = (7, 4)
 n = 0  # image_counter
 
 # checking if  images dir is exist not, if not then create images directory
-image_dir_path = "images"
+image_dir_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\calibration\calib_images_microsoft"
 
 CHECK_DIR = os.path.isdir(image_dir_path)
 # if directory does not exist create

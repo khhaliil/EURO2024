@@ -2,7 +2,7 @@ import cv2 as cv
 from cv2 import aruco
 import numpy as np
 
-calib_data_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\Data_images\MultiMatrix.npz"
+calib_data_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\calibration\Calib_matrix\MultiMatrixMicrosoft.npz"
 
 calib_data = np.load(calib_data_path)
 print(calib_data.files)
@@ -12,7 +12,7 @@ dist_coef = calib_data["distCoef"]
 r_vectors = calib_data["rVector"]
 t_vectors = calib_data["tVector"]
 
-MARKER_SIZE = 1.5  # centimeters
+MARKER_SIZE = 10  # centimeters
 
 marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 
@@ -22,7 +22,7 @@ cap = cv.VideoCapture(0)
 cap.set(10, 50)
 
 
-def denoise_frame(frame, strength=4):
+def denoise_frame(frame, strength=3):
     """
     Apply denoising to the given frame.
     :param frame: Input frame to be denoised
