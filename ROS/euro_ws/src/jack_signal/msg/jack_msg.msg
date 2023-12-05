@@ -1,0 +1,1 @@
+bool jack_state

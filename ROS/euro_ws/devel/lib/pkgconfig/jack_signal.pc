@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/gitHub/euro_ws/devel
+
+Name: jack_signal
+Description: Description of jack_signal
+Version: 0.0.0
+Cflags: -I/home/ubuntu/gitHub/euro_ws/devel/include
+Libs: -L${prefix}/lib 
+Requires: message_runtime

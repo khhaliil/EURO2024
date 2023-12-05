@@ -1,0 +1,4 @@
+float32 nav_currentX
+float32 nav_currentY
+float32 nav_currentAngle
+int8 nav_currentState

@@ -1,0 +1,24 @@
+<launch>
+    <!-- Launch can_init node -->
+    <node pkg="ros_can_interface" type="can_init.py" name="can_init_node" output="screen">
+        <!-- Add any necessary parameters or arguments for can_init -->
+    </node>
+
+    <!-- Launch can_data_receiver node -->
+    <node pkg="ros_can_interface" type="can_receiveMessage.py" name="can_receiveMessage_node" output="screen">
+        <!-- Add any necessary parameters or arguments for can_data_receiver -->
+    </node>
+
+    <!-- Launch can_data_sender node -->
+    <node pkg="ros_can_interface" type="can_sendMessage.py" name="can_sendMessage_node" output="screen">
+        <!-- Add any necessary parameters or arguments for can_data_sender -->
+    </node>
+
+    <node pkg="ros_can_interface" type="can_sendStopSignal.py" name="can_sendStopSignal_node" output="screen">
+        <!-- Add any necessary parameters or arguments for can_data_sender -->
+    </node>
+
+    <node pkg="ros_can_interface" type="can_sendAcknowledgeSignal.py" name="can_sendAcknowledgeSignal_node" output="screen">
+        <!-- Add any necessary parameters or arguments for can_data_sender -->
+    </node>
+</launch>
