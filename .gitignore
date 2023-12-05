@@ -50,7 +50,8 @@ rsconnect/
 Vision/images/image0.png
 *.png
 Vision\Euro_venv
-Vision\OpenMv try\Data_images\*.png
-Vision\OpenMv try\Data_images\Data Sc\DataTest\Data.class\*.jpg
-Vision\calibration\calib_images_microsoft\*.png
+Vision/OpenMv try/Data_images/*.png
+Vision/OpenMv try/Data_images/Data Sc/DataTest/Data.class/*.jpg
+Vision/calibration/calib_images_microsoft/*.png
 *.jpg
+Vision/Euro_venv
