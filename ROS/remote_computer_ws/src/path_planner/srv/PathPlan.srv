@@ -1,0 +1,13 @@
+# Current robot position and angle
+geometry_msgs/Pose2D current_pose
+
+# Target point
+geometry_msgs/Pose2D target_point
+
+# Presented obstacle position
+geometry_msgs/Pose2D obstacle
+
+---
+
+# Array of intermediate points for the new path
+geometry_msgs/Pose2D[] new_path

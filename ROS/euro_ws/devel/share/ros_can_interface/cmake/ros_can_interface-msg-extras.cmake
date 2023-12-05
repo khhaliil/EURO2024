@@ -1,0 +1,2 @@
+set(ros_can_interface_MESSAGE_FILES "/home/ubuntu/gitHub/euro_ws/src/ros_can_interface/msg/lidar_stopSignal.msg;/home/ubuntu/gitHub/euro_ws/src/ros_can_interface/msg/master_navigationMessage.msg;/home/ubuntu/gitHub/euro_ws/src/ros_can_interface/msg/navigator_navigationMessage.msg;/home/ubuntu/gitHub/euro_ws/src/ros_can_interface/msg/master_acknowledgSignal.msg")
+set(ros_can_interface_SERVICE_FILES "")

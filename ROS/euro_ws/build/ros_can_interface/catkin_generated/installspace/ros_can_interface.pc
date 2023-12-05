@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/gitHub/euro_ws/install
+
+Name: ros_can_interface
+Description: Description of ros_can_interface
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -lros_can_interface
+Requires: rospy std_msgs message_runtime

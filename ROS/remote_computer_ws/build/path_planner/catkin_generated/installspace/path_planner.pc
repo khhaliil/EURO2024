@@ -1,0 +1,8 @@
+prefix=/home/ubuntu/gitHub/EUROBOT2024-ROS/remote_computer_ws/install
+
+Name: path_planner
+Description: Description of path_planner
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib -lpath_planner
+Requires: rospy std_msgs message_runtime

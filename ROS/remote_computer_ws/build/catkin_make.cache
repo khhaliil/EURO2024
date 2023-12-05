@@ -1,0 +1,2 @@
+path_planner
+-DCATKIN_DEVEL_PREFIX=/home/ubuntu/gitHub/EUROBOT2024-ROS/remote_computer_ws/devel -DCMAKE_INSTALL_PREFIX=/home/ubuntu/gitHub/EUROBOT2024-ROS/remote_computer_ws/install -G Unix Makefiles
