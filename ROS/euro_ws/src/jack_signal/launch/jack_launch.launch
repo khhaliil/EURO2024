@@ -1,0 +1,9 @@
+<launch>
+
+
+        <node pkg="jack_signal" name="jack_pub" type="jack_publisher.py" output="screen"/>
+        <node pkg="jack_signal" name="jack_sub" type="jack_subscriber.py" output="screen"/>
+   
+ 
+   
+</launch>

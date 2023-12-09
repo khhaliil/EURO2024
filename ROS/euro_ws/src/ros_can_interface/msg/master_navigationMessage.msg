@@ -1,0 +1,4 @@
+float32 nav_targetX
+float32 nav_targetY
+float32 nav_targetAngle
+bool nav_isForward
