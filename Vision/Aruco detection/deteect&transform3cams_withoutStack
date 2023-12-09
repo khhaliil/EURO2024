@@ -12,7 +12,7 @@ counter = 0
 current_camera_index = 0  # Start with the first camera
 NUM_CAMERAS = 3
 
-def denoise_frame(frame, strength=3):
+def denoise_frame(frame, strength=6):
     """
     Apply denoising to the given frame.
     :param frame: Input frame to be denoised
@@ -54,6 +54,21 @@ def switch_to_next_camera():
     current_camera_index = (current_camera_index + 1) % NUM_CAMERAS
     counter = 0  # Reset counter for the next camera
 
+def flip_image(frame, camera_index):
+    """
+    Rotate the frame based on the camera index.
+    :param frame: Input frame to be rotated
+    :param camera_index: Index of the camera
+    :return: Rotated frame
+    """
+    if camera_index == 0:  # Opposite cam
+        return cv.rotate(frame, cv.ROTATE_90_COUNTERCLOCKWISE)
+    elif camera_index == 1:  # Corner cam
+        return cv.rotate(frame, cv.ROTATE_90_CLOCKWISE)
+    elif camera_index == 2:  # Central cam
+        # No rotation needed for central cam
+        return frame
+
 # Function to initialize a camera
 def init_camera(index):
     width, height = get_camera_resolution(index)
@@ -81,6 +96,7 @@ def process_frame(cap, camera_index):
     if not ret:
         return None
     frame = denoise_frame(frame)
+    frame = flip_image(frame, camera_index)
     gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
     marker_corners, marker_IDs, _ = aruco.detectMarkers(gray_frame, marker_dict, parameters=param_markers)
 

@@ -7,8 +7,8 @@ marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 param_markers = cv.aruco.DetectorParameters()
 
 # Camera settings
-CAMERA_WIDTH = 1080
-CAMERA_HEIGHT = 720
+CAMERA_WIDTH = 720
+CAMERA_HEIGHT = 480
 NUM_CAMERAS = 3
 
 def stackImages(scale, imgArray):
@@ -67,7 +67,7 @@ def denoise_frame(frame, strength=4):
 def init_camera(index, width=CAMERA_WIDTH, height=CAMERA_HEIGHT):
     cap = cv.VideoCapture(index)
     # 1080p
-    #cap.set(cv.CAP_PROP_FRAME_WIDTH, width)
+    # cap.set(cv.CAP_PROP_FRAME_WIDTH, width)
     # cap.set(cv.CAP_PROP_FRAME_HEIGHT, height)
     return cap
 

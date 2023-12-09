@@ -12,7 +12,7 @@ SQUARE_SIZE = 33  # millimeters
 criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
 
-calib_data_path = "../calib_data"
+calib_data_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\calibration"
 CHECK_DIR = os.path.isdir(calib_data_path)
 
 
@@ -38,7 +38,7 @@ img_points_2D = []  # 2d points in image plane.
 
 # The images directory path
 
-image_dir_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\images"
+image_dir_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\calibration\calib_images_microsoft"
 
 files = os.listdir(image_dir_path)
 for file in files:
