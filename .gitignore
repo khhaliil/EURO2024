@@ -55,3 +55,6 @@ Vision/OpenMv try/Data_images/Data Sc/DataTest/Data.class/*.jpg
 Vision/calibration/calib_images_microsoft/*.png
 *.jpg
 Vision/Euro_venv
+Vision/distance estimation/tempCodeRunnerFile.py
+Vision/map calibration/tempCodeRunnerFile.python
+*.jpeg
