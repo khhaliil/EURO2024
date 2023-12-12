@@ -9,84 +9,103 @@ cameraMatrix = calib_data['camMatrix']
 distCoeffs = calib_data['distCoef']
 
 # Load your image
-img_path = r"Vision\test_images\WhatsApp Image 2023-12-08 at 17.28.20.jpeg"
-img = cv2.imread(img_path)
+# img_path = r"Vision\test_images\WhatsApp Image 2023-12-08 at 17.28.20.jpeg"
+# img = cv2.imread(img_path)
+
+# siamrpn tracking 
+# cv2 tracking
 
 # Undistort the image
 #img_undistorted = cv2.undistort(img, cameraMatrix, distCoeffs, None, cameraMatrix)
+def rotate_image(image, angle):
+    """
+    Rotates an image by the given angle.
 
+    Args:
+    - image: Image to be rotated.
+    - angle: Angle in degrees to rotate the image. Positive values mean
+             counter-clockwise rotation.
+
+    Returns:
+    - Rotated image.
+    """
+    # Get the image dimensions
+    height, width = image.shape[:2]
+    # Calculate the center of the image
+    center = (width / 2, height / 2)
+    # Get the rotation matrix
+    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1)
+    # Perform the rotation
+    rotated_image = cv2.warpAffine(image, rotation_matrix, (width, height))
+    return rotated_image
+# img = rotate_image(img,-1)
 # ArUco marker parameters
 marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 aruco_params = aruco.DetectorParameters()
-marker_length = 0.049  # Marker length in meters
-
-# Detect ArUco markers
-corners, ids, rejected = aruco.detectMarkers(img, marker_dict, parameters=aruco_params)
+marker_length = 0 # Marker length in meters
 x_aruco = 0.57
 y_aruco= 0.575
-mapx = 1.998
-mapy = 2.998
+mapx = 2
+mapy = 3
+cap = cv2.VideoCapture(1)
+while True : 
+    ret,img = cap.read()
+# Detect ArUco marker   s
+    if not ret :
+        break 
+    corners, ids, rejected = aruco.detectMarkers(img, marker_dict, parameters=aruco_params)
 # Define marker locations in 3D space (assuming they lie on the z=0 plane)
-marker_locations_3d = {
+    marker_locations_3d = {
     20: np.array([(x_aruco-marker_length, y_aruco-marker_length, 0), (x_aruco+marker_length, y_aruco-marker_length, 0), (x_aruco+marker_length, y_aruco+marker_length, 0), (x_aruco-marker_length, y_aruco+marker_length, 0)]),
     21: np.array([(mapx-x_aruco-marker_length, y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, y_aruco+marker_length, 0), (mapx-x_aruco-marker_length, y_aruco+marker_length, 0)]),
     22: np.array([(x_aruco-marker_length, mapy-y_aruco-marker_length, 0), (x_aruco+marker_length, mapy-y_aruco-marker_length, 0), (x_aruco+marker_length, mapy-y_aruco+marker_length, 0), (x_aruco, mapy-y_aruco+marker_length, 0)]),
     23: np.array([(mapx-x_aruco-marker_length, mapy-y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, mapy-y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, mapy-y_aruco+marker_length, 0), (mapx-x_aruco-marker_length, mapy-y_aruco+marker_length, 0)])
-}
-
+    }   
 # Assume all markers are on the same flat surface (z=0)
-image_points = []
-object_points = []
-
-if ids is not None:
-    for i, marker_id in enumerate(ids.flatten()):
-        if marker_id in marker_locations_3d:
-            image_points.append(corners[i][0])
-            object_points.append(marker_locations_3d[marker_id])
-
+    image_points = []
+    object_points = []
+    if ids is not None:
+        for i, marker_id in enumerate(ids.flatten()):
+            if marker_id in marker_locations_3d:
+                image_points.append(corners[i][0])
+                object_points.append(marker_locations_3d[marker_id])
 # Flatten the arrays for homography
-image_points = np.array(image_points).reshape(-1, 2)
-object_points = np.array(object_points).reshape(-1, 3)
-
+    image_points = np.array(image_points).reshape(-1, 2)
+    object_points = np.array(object_points).reshape(-1, 3)
 # Compute the homography matrix if we have enough correspondences
-if len(image_points) >= 4:
+    if len(image_points) >= 4:
     # Calculate homography
-    homography_matrix, _ = cv2.findHomography(object_points[:, :2], image_points)
-
+        homography_matrix, _ = cv2.findHomography(object_points[:, :2], image_points)
     # Define the 3D coordinates of the map corners assuming z=0
-    map_corners_3d = np.float32([[0, 0], [2, 0], [2, 3], [0, 3]])
-
+        map_corners_3d = np.float32([[0, 0], [2, 0], [2, 3], [0, 3]])
     # Transform the map corners using the homography matrix
-    map_corners_2d = cv2.perspectiveTransform(map_corners_3d.reshape(-1, 1, 2), homography_matrix)
-    print (map_corners_2d)
+        map_corners_2d = cv2.perspectiveTransform(map_corners_3d.reshape(-1, 1, 2), homography_matrix)
+        print (map_corners_2d)
     # Draw the projected corners on the image
-    points = []
-
-    for i in range(map_corners_2d.shape[0]):
-        point = tuple(map_corners_2d[i, 0].astype(int))
-        points.append(point)
+        points = []
+        for i in range(map_corners_2d.shape[0]):
+            point = tuple(map_corners_2d[i, 0].astype(int))
+            points.append(point)
         #cv2.circle(img, point, 10, (0, 255, 0), -1)
         #cv2.putText(img,str(i),point,cv2.FONT_HERSHEY_COMPLEX,1,(0, 255, 0),2)
-
-    print(img.shape)
-    src_pts = np.array([points[1],points[0],  points[2], points[3]], dtype='float32')
-    dst_pts = np.array([[0,0],[ 0,img.shape[0]],  [img.shape[1], 0], [ img.shape[1],img.shape[0]]], dtype='float32')
-    M = cv2.getPerspectiveTransform(src_pts, dst_pts)
-
-
-
-    # Warp the image to get the top-down view
-    img_top_down = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
-    img_top_down=cv2.cvtColor(img_top_down,cv2.COLOR_BGR2GRAY)
-    cv2.imshow('Top-Down View', img_top_down)
-    cv2.imshow('Marked Image', img)
-    print(img_top_down.shape)
-    
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-else:
-    print("Not enough markers detected to compute the homography matrix.")
-
-
+        print(img.shape)
+        src_pts = np.array([points[1],points[0],  points[2], points[3]], dtype='float32')
+        dst_pts = np.array([[0,0],[ 0,img.shape[0]],  [img.shape[1], 0], [ img.shape[1],img.shape[0]]], dtype='float32')
+        M = cv2.getPerspectiveTransform(src_pts, dst_pts)
+ # Warp the image to get the top-down view
+        img_top_down = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
+    #img_top_down=cv2.cvtColor(img_top_down,cv2.COLOR_BGR2GRAY)
+        cv2.imshow('Top-Down View', img_top_down)
+        cv2.imshow('Marked Image', img)
+        print(img_top_down.shape)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    else:
+        cv2.imshow('Marked Image', img)
+        print("Not enough markers detected to compute the homography matrix.")
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+cap.release()
+cv2.destroyAllWindows()
 
 
