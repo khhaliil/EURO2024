@@ -42,24 +42,25 @@ def rotate_image(image, angle):
 # ArUco marker parameters
 marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 aruco_params = aruco.DetectorParameters()
-marker_length = 0 # Marker length in meters
-x_aruco = 0.57
-y_aruco= 0.575
+marker_length = 0.1 # Marker length in meters
+x_aruco = 0.5
+y_aruco= 0.750
 mapx = 2
 mapy = 3
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(2)
 while True : 
     ret,img = cap.read()
+    img = cv2.flip(img, -1)
 # Detect ArUco marker   s
     if not ret :
         break 
     corners, ids, rejected = aruco.detectMarkers(img, marker_dict, parameters=aruco_params)
 # Define marker locations in 3D space (assuming they lie on the z=0 plane)
     marker_locations_3d = {
-    20: np.array([(x_aruco-marker_length, y_aruco-marker_length, 0), (x_aruco+marker_length, y_aruco-marker_length, 0), (x_aruco+marker_length, y_aruco+marker_length, 0), (x_aruco-marker_length, y_aruco+marker_length, 0)]),
-    21: np.array([(mapx-x_aruco-marker_length, y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, y_aruco+marker_length, 0), (mapx-x_aruco-marker_length, y_aruco+marker_length, 0)]),
-    22: np.array([(x_aruco-marker_length, mapy-y_aruco-marker_length, 0), (x_aruco+marker_length, mapy-y_aruco-marker_length, 0), (x_aruco+marker_length, mapy-y_aruco+marker_length, 0), (x_aruco, mapy-y_aruco+marker_length, 0)]),
-    23: np.array([(mapx-x_aruco-marker_length, mapy-y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, mapy-y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, mapy-y_aruco+marker_length, 0), (mapx-x_aruco-marker_length, mapy-y_aruco+marker_length, 0)])
+    21: np.array([(x_aruco-marker_length, y_aruco-marker_length, 0), (x_aruco+marker_length, y_aruco-marker_length, 0), (x_aruco+marker_length, y_aruco+marker_length, 0), (x_aruco-marker_length, y_aruco+marker_length, 0)]),
+    23: np.array([(mapx-x_aruco-marker_length, y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, y_aruco+marker_length, 0), (mapx-x_aruco-marker_length, y_aruco+marker_length, 0)]),
+    20: np.array([(x_aruco-marker_length, mapy-y_aruco-marker_length, 0), (x_aruco+marker_length, mapy-y_aruco-marker_length, 0), (x_aruco+marker_length, mapy-y_aruco+marker_length, 0), (x_aruco, mapy-y_aruco+marker_length, 0)]),
+    22: np.array([(mapx-x_aruco-marker_length, mapy-y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, mapy-y_aruco-marker_length, 0), (mapx-x_aruco+marker_length, mapy-y_aruco+marker_length, 0), (mapx-x_aruco-marker_length, mapy-y_aruco+marker_length, 0)])
     }   
 # Assume all markers are on the same flat surface (z=0)
     image_points = []
