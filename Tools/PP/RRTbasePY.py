@@ -171,6 +171,7 @@ class RRTGraph:
         self.x=[]
         self.y=[]
         self.parent=[]
+        self.safety_distance=20
         #initialize the tree
         self.x.append(x)
         self.y.append(y)
@@ -320,7 +321,7 @@ class RRTGraph:
                 return False 
         return True     
     
-    def crossObstacle(self, x1, x2, y1, y2, safety_distance):
+    def crossObstacle(self, x1, x2, y1, y2):
         """
         Check if a line segment between two points crosses an obstacle.
 
@@ -341,12 +342,12 @@ class RRTGraph:
                 x = x1 * u + x2 * (1 - u)
                 y = y1 * u + y2 * (1 - u)
 
-                if math.hypot(x - obstacle.centerx, y - obstacle.centery) < (obstacle.width / 2 + safety_distance):
+                if math.hypot(x - obstacle.centerx, y - obstacle.centery) < (obstacle.width / 2 + self.safety_distance):
                     return True
 
         return False
     
-    def connect(self, n1, n2, safety_distance=35):
+    def connect(self, n1, n2):
         """
         Attempt to connect two nodes with a straight line, avoiding obstacles.
 
@@ -361,14 +362,14 @@ class RRTGraph:
         (x1, y1) = (self.x[n1], self.y[n1])
         (x2, y2) = (self.x[n2], self.y[n2])
 
-        if self.crossObstacle(x1, x2, y1, y2, safety_distance):
+        if self.crossObstacle(x1, x2, y1, y2):
             self.remove_node(n2)
             return False
         else:
             self.add_edge(n1, n2)
             return True
 
-    def step(self, nnear, nrand, dmax=80, safety_distance=20):
+    def step(self, nnear, nrand, dmax=80):
         """
         Take a step towards a random sample, ensuring a maximum step distance and avoiding obstacles.
 
@@ -386,7 +387,7 @@ class RRTGraph:
             (xrand, yrand) = (self.x[nrand], self.y[nrand])
             (px, py) = (xrand - xnear, yrand - ynear)
             theta = math.atan2(py, px)
-            (x, y) = (int(xnear + (dmax - safety_distance) * math.cos(theta)), int(ynear + (dmax - safety_distance) * math.sin(theta)))
+            (x, y) = (int(xnear + (dmax - self.safety_distance) * math.cos(theta)), int(ynear + (dmax - self.safety_distance) * math.sin(theta)))
 
             self.remove_node(nrand)
 
@@ -440,7 +441,6 @@ class RRTGraph:
             pathCoords.append([x,y])
         x,y = self.goal[0],self.goal[1]    
         pathCoords.append([x,y])     
-        print(pathCoords)    
         return pathCoords   
 
     def getPathCoords_1(self): 
@@ -452,7 +452,6 @@ class RRTGraph:
         """
         pathCoords=[]
         for node in self.refined_path:
-            print(node)
             x,y=(self.x[node],self.y[node])
             pathCoords.append([x,y])   
         return pathCoords          
@@ -526,5 +525,4 @@ class RRTGraph:
         x,y = self.goal[0],self.goal[1]    
         self.refined_path.append([x,y])     
 
-        print(self.refined_path)
         return self.refined_path

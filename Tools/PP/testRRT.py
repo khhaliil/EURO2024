@@ -1,7 +1,7 @@
 from RRTbasePY import RRTGraph
 from RRTbasePY import RRTMap
 
-def find_path_coordinates(dimensions=(600, 800), start=(50, 50), goal=(510, 510), obsdim=30, obsnum=50, iteration=0, obstacles=[[150, 150], [260, 260], [390, 390]]):
+def find_path_coordinates(dimensions=(3000, 2000), start=(150, 50), goal=(510, 510), obsdim=30, obsnum=50, iteration=0, obstacles=[[150, 150], [260, 260], [390, 390]]):
     map = RRTMap(start, goal, dimensions, obsdim, obsnum)
     graph = RRTGraph(start, goal, dimensions, obsdim, obstacles)
 
