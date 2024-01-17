@@ -3,44 +3,49 @@ import time
 from playsound import playsound  # Import playsound library
 import cv2.aruco as aruco
 import numpy as np 
+import pygame
 
-def save_frame(img, base_path=r'C:\Users\MSI\Desktop\EURO2024\Vision\Data\dataTest_withoutAruco', prefix='frame', interval=5, manual_save=False):
-    """
-    Save frames to a specified path at a given interval or manually.
+def play_sound(sound_file):
+    pygame.mixer.init()
+    pygame.mixer.music.load(sound_file)
+    pygame.mixer.music.play()
+    while pygame.mixer.music.get_busy(): 
+        pygame.time.Clock().tick(10)
 
-    Args:
-    - img: Image to be saved.
-    - base_path: Base path where images will be saved.
-    - prefix: Prefix for the image filenames.
-    - interval: Time interval in seconds between automatic saves.
-    - manual_save: Flag to trigger manual saving.
-    """
+sound1 =r"C:\Users\MSI\\Desktop\EURO2024\Tools\Censor_beep_sound_effect.mp3"
+soudn2 = r"C:\Users\MSI\Desktop\EURO2024\Tools\Camera_Shutter_Sound_Effect.mp3"
+
+def save_frame(img, base_path=r'C:\Users\MSI\Desktop\EURO2024\Vision\Data\dataTest_withoutAruco', prefix="frame", interval=10, manual_save=False):
     last_saved_time = getattr(save_frame, "last_saved_time", 0)
     current_time = time.time()
 
-    if manual_save or (current_time - last_saved_time) >= interval:
-        # Play the "bip bip" sound before saving
-        #playsound(r"C:\Users\MSI\Desktop\EURO2024\Tools\Censor_beep_sound_effect.mp3")  # Change 'notification_sound.mp3' to the path of your audio file
-        time.sleep(2)  # Sleep for 4 seconds before capturing
+    # Time remaining before next automatic capture
+    time_remaining = interval - (current_time - last_saved_time)
+
+    # If manual save or time to save frame based on interval
+    if manual_save or time_remaining <= 0:
         filename = f"{prefix}_{int(current_time)}.jpg"
-        cv2.imwrite(filename, img)
+        cv2.imwrite(f"{base_path}\\{filename}", img)
         save_frame.last_saved_time = current_time
-        #playsound(r"C:\Users\MSI\Desktop\EURO2024\Tools\Camera_Shutter_Sound_Effect.mp3")
+        play_sound(soudn2)  # Play capture sound
         print(f"Saved: {filename}")
+    elif time_remaining <= 3 and not getattr(save_frame, "sound_played", False):
+        play_sound(sound1)  # Play warning sound
+        save_frame.sound_played = True  # Set flag to avoid replaying sound
+    elif time_remaining > 3:
+        save_frame.sound_played = False
 
 #####################################################################################
 
-marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_250)
-aruco_params = aruco.DetectorParameters()
 
 mapx=2000
 mapy=3000
 
-def Calculate_homography(img, mapx=mapx/1000 , mapy=mapy/1000,homography_matrix_path = r"C:\Users\MSI\Desktop\EURO2024\Tools\homography_matrix.npz"):
+def Calculate_homography(corners,ids,img, mapx=mapx/1000 , mapy=mapy/1000,homography_matrix_path = r"C:\Users\MSI\Desktop\EURO2024\Tools\homography_matrix.npz"):
     #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     homography_matrix = None
-    corners, ids, rejected = aruco.detectMarkers(img, marker_dict, parameters=aruco_params)
+    
 
     if ids is not None:
         print("Detected ArUco IDs:", ids.flatten())
@@ -82,7 +87,7 @@ def Calculate_homography(img, mapx=mapx/1000 , mapy=mapy/1000,homography_matrix_
     #     cv2.imshow('Marked Image', img)
     #     print("Not enough markers detected to compute the homography matrix.")
     #     homography_matrix = None
-    
+   
     return homography_matrix 
     
 

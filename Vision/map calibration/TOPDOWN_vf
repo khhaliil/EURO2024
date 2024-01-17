@@ -4,24 +4,48 @@ import numpy as np
 from save_data import save_frame
 from save_data import Calculate_homography
 from save_data import pixel_to_mm
+from Kalman import get_measurements,predict_future_positions_kalman
 import os 
+import sys
+sys.path.append(r'C:\Users\MSI\Desktop\EURO2024')  # Replace with the absolute path to EURO directory
+###############################################################################
+BLUE_TEAM_RANGE = [1, 5]
+YELLOW_TEAM_RANGE = [6, 10]
 
+color_to_track=YELLOW_TEAM_RANGE
 
-# Load calibration data from .npz file
-calib_data_path = r"Vision\calibration\Calib_matrix\MultiMatrixXiaomi.npz"
-calib_data = np.load(calib_data_path)
-cameraMatrix = calib_data['camMatrix']
-distCoeffs = calib_data['distCoef']
+def switch_team(team_color):
+    global current_team_range
+    if team_color.lower() == 'blue':
+        current_team_range = BLUE_TEAM_RANGE
+    elif team_color.lower() == 'yellow':
+        current_team_range = YELLOW_TEAM_RANGE
+    else:
+        print(f"Unknown team color: {team_color}")
+
+###############################################################################
+
+# calib_data_path = r"Vision\calibration\Calib_matrix\MultiMatrixXiaomi.npz"
+# calib_data = np.load(calib_data_path)
+# cameraMatrix = calib_data['camMatrix']
+# distCoeffs = calib_data['distCoef']
+
+marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_250)
+aruco_params = aruco.DetectorParameters()
 
 Calculate_homography_manually = False
 homography_calculated= False
 homography_matrix_path = r"C:\Users\MSI\Desktop\EURO2024\Tools\homography_matrix.npz"
 
 def load_homography_matrix(path):
-    if os.path.exists(path):
-        data = np.load(path)
-        return data['homography_matrix']
-    else:
+    try:
+        with np.load(path) as data:
+            return data['homography_matrix']
+    except KeyError:
+        print(f"'homography_matrix' not found in {path}")
+        return None
+    except IOError:
+        print(f"Could not read file: {path}")
         return None
 
 homography_matrix = load_homography_matrix(homography_matrix_path)
@@ -49,14 +73,15 @@ cv2.setMouseCallback('Top-Down View', click_event)
 
 mapx = 2
 mapy = 3
-cap = cv2.VideoCapture(2)
+cap = cv2.VideoCapture(3)
 cv2.namedWindow("Trackbars")
 
 def nothing(x):
     pass
+
 # Create trackbars for adjusting parameters
 cv2.createTrackbar("Marker Length", "Trackbars", 10, 20, nothing)  # Range from 0.1m to 0.2m
-cv2.createTrackbar("X Aruco", "Trackbars", 517, 1000, nothing)  # Example range
+cv2.createTrackbar("X Aruco", "Trackbars", 516, 1000, nothing)  # Example range
 cv2.createTrackbar("Y Aruco", "Trackbars", 755, 1000, nothing)
 
 while True : 
@@ -64,16 +89,18 @@ while True :
     ret,img = cap.read()
     if not ret :
         break 
-
-    img = cv2.flip(img, -1)
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    #img = cv2.flip(img, -1)
+    #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     img_top_down = img
 
+
+
     if homography_calculated == False:
-        # print("entered loop")
         if homography_matrix is None or Calculate_homography_manually == True:
-            homography_matrix = Calculate_homography(img)
+            corners, ids, rejected = aruco.detectMarkers(img, marker_dict, parameters=aruco_params)
+            homography_matrix = Calculate_homography(corners,ids,img)
             # print("hhnfdj",homography_matrix)
             if homography_matrix is not None:
                 Calculate_homography_manually = not Calculate_homography_manually
@@ -82,11 +109,12 @@ while True :
                 print("Homography matrix calculation failed")
         else:
             print("loaded homography matrix from local")
-            # Only proceed if homography_matrix is valid
+            homography_calculated = True
+            
     if homography_matrix is not None and not bird_view_done:
         try:
             map_corners_2d = cv2.perspectiveTransform(map_corners_3d.reshape(-1, 1, 2), homography_matrix)
-                    # ... [rest of the code to process map_corners_2d and create img_top_down]
+                   
         except cv2.error as e:
             print(f"Error in perspective transform: {e}")
         #print (map_corners_2d)
@@ -106,7 +134,22 @@ while True :
         homography_calculated = True
         bird_view_done= not bird_view_done
     
+  
+    ennemy_robot_predictions = []   
     img_top_down = cv2.warpPerspective(img, M, (img.shape[1], img.shape[0]))
+
+    get_measurements(img_top_down,color_to_track=color_to_track)
+    current_positions, ennemy_robot_predictions = predict_future_positions_kalman()
+    if current_positions is not None:
+    # Draw the current position
+        cv2.circle(img_top_down, (int(current_positions[0]), int(current_positions[1])), 5, (255, 0, 255), -1)
+    #print(ennemy_robot_predictions)
+    # Draw circles for each future position if predictions are available
+    if ennemy_robot_predictions is not None:
+        for pos in ennemy_robot_predictions:
+            x, y = int(pos[0]), int(pos[1])
+            cv2.circle(img_top_down, (x, y), 4, (0, 0, 255), -1)
+    
     cv2.imshow('Top-Down View', img_top_down)
     cv2.imshow('Marked Image', img)
     
@@ -118,6 +161,7 @@ while True :
         save_frame(img_top_down, prefix='top_down', manual_save=True)
     else:
         # Automatic save every 10 seconds
+        
         save_frame(img_top_down, prefix='top_down', interval=12)
     if key == ord('g'):
             # Toggle capture mode
