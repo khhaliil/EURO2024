@@ -11,12 +11,13 @@ param_markers  = cv.aruco.DetectorParameters()
 # CAMERA_HEIGHT = 720
 
 cap = cv.VideoCapture(2)
-# cap.set(cv.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)
+# cap.set(cv.CAP_PROP_FRAME_WIDTH, CAMERA_WIDTH)    
 # cap.set(cv.CAP_PROP_FRAME_HEIGHT, CAMERA_HEIGHT)
 
 cv.imshow("test",cap.read()[1])
 while True:
     ret, frame = cap.read()
+    frame = cv.flip(frame , -1)
    
     if not ret:
         break
