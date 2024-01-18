@@ -32,7 +32,7 @@ class RRTMap:
         - drawPath_1: Method to draw the optimized (smoothed) RRT path.
         - drawobs: Method to draw obstacles on the map.
         """ 
-    def __init__(self,start,goal,mapDimensions,obsdim,obsnum):
+    def __init__(self,start,goal,mapDimensions,obsdim):
         """
         Initialize RRTMap with start and goal positions, map dimensions, obstacle dimensions, and the number of obstacles.
 
@@ -46,7 +46,7 @@ class RRTMap:
         self.start=start
         self.goal=goal
         self.MapDimensions = mapDimensions
-        self.Maph,self.Mapw=self.MapDimensions
+        self.Mapw,self.Maph=self.MapDimensions
 
         #window settings
         self.MapWindowName='RRT path planning' 
@@ -59,7 +59,6 @@ class RRTMap:
 
         self.obstacles=[]
         self.obsdim = obsdim
-        self.obsNumber = obsnum 
 
         #Colors
         self.grey = (70,70,70)
@@ -79,11 +78,11 @@ class RRTMap:
         - obstacles (list): List of obstacle positions.
         """
                
-        pygame.draw.circle(self.map,self.green,self.start,self.nodeRad+30,0)
-        pygame.draw.circle(self.map,self.green,self.goal,self.nodeRad+20,1)
+        pygame.draw.circle(self.map,self.green,self.start,self.nodeRad+10,1)
+        pygame.draw.circle(self.map,self.grey,self.goal,self.nodeRad+10,1)
         self.drawobs(obstacles)
 
-    def drawPath(self, path): 
+    def draw_Path(self, path): 
         """
         Draw the original RRT path.
 
@@ -91,9 +90,9 @@ class RRTMap:
         - path (list): List of nodes representing the original RRT path.
         """    
         for node in path:
-            pygame.draw.circle(self.map, self.blue, node, self.nodeRad+3, 0)
-
-    def drawPath_1(self, path_smoothed): 
+            pygame.draw.circle(self.map, self.blue, node, self.nodeRad+5, 0)
+    
+    def draw_smoothed_Path(self, path_smoothed): 
         """
         Draw the optimized (smoothed) RRT path.
 
@@ -101,8 +100,9 @@ class RRTMap:
         - path_smoothed (list): List of nodes representing the optimized RRT path.
         """        
         for node in path_smoothed:
-            pygame.draw.circle(self.map, self.red, node, self.nodeRad+3, 0)        
-
+            pygame.draw.circle(self.map, self.red, node, self.nodeRad+5, 0)  
+      
+    
     def drawobs(self,obstacles): 
         """
         Draw obstacles on the map.
@@ -157,7 +157,7 @@ class RRTGraph:
     - optimize_path: Method to smooth the path by removing unnecessary waypoints.
     - showObstacles: Method to display all obstacles on the map.
     """
-    def __init__(self,start,goal,mapDimensions,obsdim,obsnum):
+    def __init__(self,start,goal,mapDimensions,obsdim,obstacles):
         """
         Initialize RRTGraph with start and goal positions, map dimensions, obstacle dimensions, and the number of obstacles.
 
@@ -171,14 +171,14 @@ class RRTGraph:
         self.x=[]
         self.y=[]
         self.parent=[]
-        self.safety_distance=20
+        self.safety_distance=5
         #initialize the tree
         self.x.append(x)
         self.y.append(y)
         self.parent.append(0)
         #the obstacle
+        self.obstacles=obstacles
         self.obsDim=obsdim 
-        self.obsNum=obsnum 
         #path
         self.goalstate = None 
         self.path=[]
@@ -513,7 +513,7 @@ class RRTGraph:
 
             j = n - 1
             while j > i:
-                if not self.crossObstacle(temporary_path[i][0], temporary_path[j][0], temporary_path[i][1], temporary_path[j][1], 15):
+                if not self.crossObstacle(temporary_path[i][0], temporary_path[j][0], temporary_path[i][1], temporary_path[j][1]):
                     last_valid_node = temporary_path[j]
                     self.refined_path.append(last_valid_node)
                     n = len(temporary_path)-(j-i)

@@ -1,10 +1,10 @@
 from RRTbasePY import RRTGraph
 from RRTbasePY import RRTMap
 
-def find_path_coordinates(dimensions=(3000, 2000), start=(150, 50), goal=(510, 510), obsdim=30, obsnum=50, iteration=0, obstacles=[[150, 150], [260, 260], [390, 390]]):
-    map = RRTMap(start, goal, dimensions, obsdim, obsnum)
+def find_path_coordinates(dimensions=(750, 500), start=(50, 600), goal=(622, 93), obsdim=31, obstacles=[[250, 325], [375, 125], [375, 375], [250, 175], [500,175], [500, 325]]):
+    map = RRTMap(start, goal, dimensions, obsdim)
     graph = RRTGraph(start, goal, dimensions, obsdim, obstacles)
-
+    iteration = 0
     obstacles = graph.addObstacles(obstacles)
 
     while not graph.path_to_goal():
@@ -16,7 +16,6 @@ def find_path_coordinates(dimensions=(3000, 2000), start=(150, 50), goal=(510, 5
         iteration += 1
 
     path_coords = graph.getPathCoords()
-    #graph.refined_path = graph.optimize_path()
     smoothed_path_coords = graph.optimize_path()
     return smoothed_path_coords
 
