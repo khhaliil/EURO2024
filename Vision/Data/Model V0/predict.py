@@ -24,24 +24,24 @@ results = model(image)
 result = results[0]
 
 # Access the bounding boxes
-bounding_boxes = result.boxes.data
+bounding_boxes = result.boxes
 
 # Define the detection threshold
-threshold = 0.1
+conf_threshold = 0.7
 
-# Plot bounding boxes on the image
-# Plot bounding boxes on the image
-for box in bounding_boxes:
-    # Convert the mapped values to a list before concatenating
-    x1, y1, x2, y2, confidence = map(int, box[:5])
-    class_id = int(box[5])
-
-    if confidence >= threshold:
+# Process each detection
+for i in range(len(bounding_boxes)):
+    box = bounding_boxes.data[i]  # Access the bounding box data
+    x1, y1, x2, y2, confidence, class_id = box
+    x1, y1, x2, y2, class_id = map(int, [x1, y1, x2, y2, class_id])
+    
+    if confidence >= conf_threshold:
+        # Draw bounding box and label on the image
         cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        cv2.putText(image, f'{result.names[class_id]} {confidence:.2f}', (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+        label = f'{result.names[class_id]} {confidence:.2f}'
+        cv2.putText(image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-
-# Display the image
+# Display the image and wait until a key is pressed
 cv2.imshow('Detection', image)
-cv2.waitKey(0)
+cv2.waitKey(0)  # Wait indefinitely for a key press
 cv2.destroyAllWindows()
