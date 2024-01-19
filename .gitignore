@@ -70,4 +70,6 @@ Tools/optimisation
 
 Tools/PP/pygame_test.py
 Tools/PP/RRToptbasePY.py
+*.jpg
+*.pt
 
