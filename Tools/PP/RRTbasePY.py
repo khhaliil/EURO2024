@@ -22,14 +22,12 @@ class RRTMap:
         - goal: Tuple representing the goal position.
         - MapDimensions: Tuple representing the dimensions of the map.
         - obsdim: Dimension of obstacles.
-        - obsnum: Number of obstacles.
-        - ... (Other attributes)
+        - obstacles: List storing obstacle positions.
 
         Methods:
         - __init__: Constructor method to initialize the map.
         - drawMap: Method to draw the map with obstacles, start, and goal positions.
         - drawPath: Method to draw the original RRT path.
-        - drawPath_1: Method to draw the optimized (smoothed) RRT path.
         - drawobs: Method to draw obstacles on the map.
         """ 
     def __init__(self,start,goal,mapDimensions,obsdim,obstacles):
@@ -104,9 +102,7 @@ class RRTMap:
         Parameters:
         - obstacles (list): List of obstacle positions.
         """     
-        print("ghassen")   
         obstaclesList=self.obstacles.copy()
-        print(obstaclesList)
         while (len(obstaclesList)>0):
             obstacle = obstaclesList.pop(0)
             pygame.draw.circle(self.map, self.black, obstacle, self.obsdim, 0)  
@@ -148,11 +144,9 @@ class RRTGraph:
     - step: Method to take a step towards a random sample, ensuring a maximum step distance and avoiding obstacles.
     - path_to_goal: Method to generate a path from the start to the goal using the parent relationships.
     - getPathCoords: Method to get the coordinates of nodes in the original path.
-    - getPathCoords_1: Method to get the coordinates of nodes in the optimized path.
     - bias: Method to bias the exploration towards the goal.
     - expand: Method to expand the RRT graph by adding a new node.
     - optimize_path: Method to smooth the path by removing unnecessary waypoints.
-    - showObstacles: Method to display all obstacles on the map.
     """
     def __init__(self,start,goal,mapDimensions,obsdim,obstacles):
         """
@@ -296,8 +290,6 @@ class RRTGraph:
             temp = obs.pop(0)
             distance = math.sqrt((x - temp[0])**2 + (y - temp[1])**2)
             limit = self.obsDim + self.safety_distance + self.myRad
-            print("distance : ",distance)
-            print("limit  :", limit)
             if distance < limit:
                 self.remove_node(n)
                 return False 
@@ -467,6 +459,7 @@ class RRTGraph:
         Returns:
         - refined_path (list): List of indices representing the optimized (smoothed) RRT path.
         """
+        self.getPathCoords()
         temporary_path = self.getPathCoords()
         self.refined_path.append(temporary_path[0])
 

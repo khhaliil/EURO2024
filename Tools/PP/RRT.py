@@ -17,8 +17,8 @@ def main():
     map.drawMap()
 
     running = True  
-
-    while running and (not graph.path_to_goal()):
+    iteration = 0
+    while (running and (not graph.path_to_goal())) and iteration < 100:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -34,10 +34,10 @@ def main():
             pygame.draw.circle(map.map, map.grey, (X[-1], Y[-1]), map.nodeRad + 2, 0)
             pygame.draw.line(map.map, map.blue, (X[-1], Y[-1]), (X[Parent[-1]], Y[Parent[-1]]), map.edgeThickness)
 
-        if iteration % 5 == 0:
+        if iteration % 50 == 0:
             pygame.display.update()
         iteration += 1
-
+    print(iteration)
     smoothed_path_coords = graph.optimize_path()
     map.drawPath(graph.getPathCoords(),smoothed_path_coords)
     pygame.display.update()
