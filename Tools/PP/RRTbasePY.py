@@ -163,7 +163,7 @@ class RRTGraph:
         self.y=[]
         self.parent=[]
         self.myRad = 38
-        self.safety_distance=6
+        self.safety_distance=5
         #initialize the tree
         self.x.append(x)
         self.y.append(y)
@@ -238,10 +238,9 @@ class RRTGraph:
         Returns:
         - dist (float): Euclidean distance between the nodes.
         """        
-        x1 = self.x[n1]
-        y1 = self.y[n1]
-        x2 = self.x[n2]
-        y2 = self.y[n2]
+        (x1,y1) = (self.x[n1],self.y[n1])
+        (x2,y2) = (self.x[n2],self.y[n2])
+
         px=(float(x1)-float(x2))**2
         py=(float(y1)-float(y2))**2
         return ((px+py)**(0.5))
@@ -461,6 +460,7 @@ class RRTGraph:
         """
         self.getPathCoords()
         temporary_path = self.getPathCoords()
+        print(len(temporary_path))
         self.refined_path.append(temporary_path[0])
 
         i = 0  
