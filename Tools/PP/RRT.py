@@ -9,13 +9,12 @@ def main():
     obsdim = 31
     iteration = 0
     obstacles = [[250, 325], [375, 125], [375, 375], [250, 175], [500,175], [500, 325]]
-    #obstacles = [[250,325], [375,125], [375,375]]
+    obstacles = [[250,325], [375,125], [375,375]]
     pygame.init()
-    map = RRTMap(start, goal, dimensions, obsdim)
+    map = RRTMap(start, goal, dimensions, obsdim,obstacles)
     graph = RRTGraph(start, goal, dimensions, obsdim, obstacles)
 
-    obstacles = graph.addObstacles(obstacles)
-    map.drawMap(obstacles)
+    map.drawMap()
 
     running = True  
 
@@ -39,10 +38,8 @@ def main():
             pygame.display.update()
         iteration += 1
 
-    map.draw_Path(graph.getPathCoords()) 
     smoothed_path_coords = graph.optimize_path()
-    print(smoothed_path_coords)
-    map.draw_smoothed_Path(smoothed_path_coords)
+    map.drawPath(graph.getPathCoords(),smoothed_path_coords)
     pygame.display.update()
     pygame.event.wait(0)
     pygame.quit()  

@@ -32,7 +32,7 @@ class RRTMap:
         - drawPath_1: Method to draw the optimized (smoothed) RRT path.
         - drawobs: Method to draw obstacles on the map.
         """ 
-    def __init__(self,start,goal,mapDimensions,obsdim):
+    def __init__(self,start,goal,mapDimensions,obsdim,obstacles):
         """
         Initialize RRTMap with start and goal positions, map dimensions, obstacle dimensions, and the number of obstacles.
 
@@ -53,11 +53,11 @@ class RRTMap:
         pygame.display.set_caption(self.MapWindowName)
         self.map=pygame.display.set_mode((self.Mapw,self.Maph))
         self.map.fill ((255,255,255))
-        self.nodeRad=2
+        self.nodeRad=3
         self.nodeThickness=0
         self.edgeThickness=1
 
-        self.obstacles=[]
+        self.obstacles=obstacles
         self.obsdim = obsdim
 
         #Colors
@@ -66,11 +66,12 @@ class RRTMap:
         self.green = (0,255,0)
         self.red = (255,0,0)
         self.white = (255,255,255)
+        self.black = (0,0,0)
 
 
 
 
-    def drawMap(self,obstacles):
+    def drawMap(self):
         """
         Draw the map with obstacles, start, and goal positions.
 
@@ -80,40 +81,36 @@ class RRTMap:
                
         pygame.draw.circle(self.map,self.green,self.start,self.nodeRad+10,1)
         pygame.draw.circle(self.map,self.grey,self.goal,self.nodeRad+10,1)
-        self.drawobs(obstacles)
+        self.drawobs()
 
-    def draw_Path(self, path): 
+    def drawPath(self, path, path_smoothed): 
         """
         Draw the original RRT path.
-
-        Parameters:
-        - path (list): List of nodes representing the original RRT path.
-        """    
-        for node in path:
-            pygame.draw.circle(self.map, self.blue, node, self.nodeRad+5, 0)
-    
-    def draw_smoothed_Path(self, path_smoothed): 
-        """
         Draw the optimized (smoothed) RRT path.
 
         Parameters:
+        - path (list): List of nodes representing the original RRT path.
         - path_smoothed (list): List of nodes representing the optimized RRT path.
-        """        
+        """    
+        for node in path:
+            pygame.draw.circle(self.map, self.blue, node, self.nodeRad+5, 0)
         for node in path_smoothed:
-            pygame.draw.circle(self.map, self.red, node, self.nodeRad+5, 0)  
-      
+            pygame.draw.circle(self.map, self.red, node, self.nodeRad+5, 0)            
     
-    def drawobs(self,obstacles): 
+    def drawobs(self): 
         """
         Draw obstacles on the map.
 
         Parameters:
         - obstacles (list): List of obstacle positions.
-        """        
-        obstaclesList=obstacles.copy()
+        """     
+        print("ghassen")   
+        obstaclesList=self.obstacles.copy()
+        print(obstaclesList)
         while (len(obstaclesList)>0):
             obstacle = obstaclesList.pop(0)
-            pygame.draw.rect(self.map,self.grey,obstacle)
+            pygame.draw.circle(self.map, self.black, obstacle, self.obsdim, 0)  
+
 
 class RRTGraph: 
     """
@@ -171,7 +168,8 @@ class RRTGraph:
         self.x=[]
         self.y=[]
         self.parent=[]
-        self.safety_distance=5
+        self.myRad = 38
+        self.safety_distance=6
         #initialize the tree
         self.x.append(x)
         self.y.append(y)
@@ -184,26 +182,6 @@ class RRTGraph:
         self.path=[]
         #smoothed path
         self.refined_path=[]
-
-
-    def addObstacles(self, obstacles):
-        """
-        Convert obstacle positions to pygame.Rect objects.
-
-        Parameters:
-        - obstacles (list): List of obstacle positions.
-
-        Returns:
-        - obs (list): List of pygame.Rect objects representing obstacles.
-        """        
-        obs = []
-        for pos in obstacles:
-            x, y = pos
-            rectang = pygame.Rect((x, y), (self.obsDim, self.obsDim))
-            obs.append(rectang)
-
-        self.obstacles = obs.copy()
-        return obs
                  
     def add_node(self,n,x,y): 
         """
@@ -315,8 +293,12 @@ class RRTGraph:
         (x,y)=(self.x[n],self.y[n])
         obs=self.obstacles.copy()
         while len(obs) > 0:
-            rectang = obs.pop(0)
-            if (rectang.collidepoint(x,y)):
+            temp = obs.pop(0)
+            distance = math.sqrt((x - temp[0])**2 + (y - temp[1])**2)
+            limit = self.obsDim + self.safety_distance + self.myRad
+            print("distance : ",distance)
+            print("limit  :", limit)
+            if distance < limit:
                 self.remove_node(n)
                 return False 
         return True     
@@ -341,10 +323,8 @@ class RRTGraph:
                 u = i / 100
                 x = x1 * u + x2 * (1 - u)
                 y = y1 * u + y2 * (1 - u)
-
-                if math.hypot(x - obstacle.centerx, y - obstacle.centery) < (obstacle.width / 2 + self.safety_distance):
+                if math.hypot(x - obstacle[0], y - obstacle[1]) < (self.obsDim / 2 + self.safety_distance + self.myRad/2):
                     return True
-
         return False
     
     def connect(self, n1, n2):
@@ -369,7 +349,7 @@ class RRTGraph:
             self.add_edge(n1, n2)
             return True
 
-    def step(self, nnear, nrand, dmax=80):
+    def step(self, nnear, nrand, dmax=50):
         """
         Take a step towards a random sample, ensuring a maximum step distance and avoiding obstacles.
 
@@ -441,20 +421,7 @@ class RRTGraph:
             pathCoords.append([x,y])
         x,y = self.goal[0],self.goal[1]    
         pathCoords.append([x,y])     
-        return pathCoords   
-
-    def getPathCoords_1(self): 
-        """
-        Get the coordinates of nodes in the optimized path.
-
-        Returns:
-        - pathCoords (list): List of node coordinates in the optimized path.
-        """
-        pathCoords=[]
-        for node in self.refined_path:
-            x,y=(self.x[node],self.y[node])
-            pathCoords.append([x,y])   
-        return pathCoords          
+        return pathCoords            
 
     def bias(self,ngoal):
         """
@@ -522,7 +489,7 @@ class RRTGraph:
                     j -= 1
 
             i = j
-        x,y = self.goal[0],self.goal[1]    
-        self.refined_path.append([x,y])     
-
+        if not (self.refined_path[-1] == self.goal):   
+            x,y = self.goal[0],self.goal[1]    
+            self.refined_path.append([x,y])  
         return self.refined_path

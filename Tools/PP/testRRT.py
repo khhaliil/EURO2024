@@ -5,7 +5,6 @@ def find_path_coordinates(dimensions=(750, 500), start=(50, 600), goal=(622, 93)
     map = RRTMap(start, goal, dimensions, obsdim)
     graph = RRTGraph(start, goal, dimensions, obsdim, obstacles)
     iteration = 0
-    obstacles = graph.addObstacles(obstacles)
 
     while not graph.path_to_goal():
         if iteration % 10 == 0:
