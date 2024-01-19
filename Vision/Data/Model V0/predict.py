@@ -1,47 +1,40 @@
-import os
 import cv2
 from ultralytics import YOLO
 
-# Define the path for the model and the image
-model_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\Data\Model V0\runs\detect\train4\weights\best.pt"
-image_path = r"C:\Users\MSI\Desktop\EURO2024\Vision\Data\Model V0\images\train\top_down_1705318679.jpg"
+# Load the trained YOLO model
+model = YOLO("yolov8m.yaml")  # Adjust this to your model file
 
-# Load the custom model
-model = YOLO(model_path)
+# Open a handle to the default camera
+cap = cv2.VideoCapture(3)
 
-# Load the image
-image = cv2.imread(image_path)
+# Check if the webcam is opened correctly
+if not cap.isOpened():
+    raise IOError("Cannot open webcam")
 
-# Check if the image is loaded successfully
-if image is None:
-    print("Failed to load the image")
-    exit(1)
+try:
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
 
-# Perform detection
-results = model(image)
+        # Perform detection on the frame
+        results = model.predict(frame)
 
-# Access the first (and likely only) results object
-result = results[0]
+        # Process results
+        for result in results:
+            for i in range(len(result.boxes)):
+                box = result.boxes.data[i]
+                x1, y1, x2, y2, confidence, class_id = map(int, box)
+                cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                label = f'{result.names[class_id]} {confidence:.2f}'
+                cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
-# Access the bounding boxes
-bounding_boxes = result.boxes
+        # Display the resulting frame
+        cv2.imshow('Frame', frame)
 
-# Define the detection threshold
-conf_threshold = 0.7
-
-# Process each detection
-for i in range(len(bounding_boxes)):
-    box = bounding_boxes.data[i]  # Access the bounding box data
-    x1, y1, x2, y2, confidence, class_id = box
-    x1, y1, x2, y2, class_id = map(int, [x1, y1, x2, y2, class_id])
-    
-    if confidence >= conf_threshold:
-        # Draw bounding box and label on the image
-        cv2.rectangle(image, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        label = f'{result.names[class_id]} {confidence:.2f}'
-        cv2.putText(image, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-
-# Display the image and wait until a key is pressed
-cv2.imshow('Detection', image)
-cv2.waitKey(0)  # Wait indefinitely for a key press
-cv2.destroyAllWindows()
+        # Break the loop with the 'q' key
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+finally:
+    cap.release()
+    cv2.destroyAllWindows()
