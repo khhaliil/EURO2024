@@ -4,6 +4,8 @@ from playsound import playsound  # Import playsound library
 import cv2.aruco as aruco
 import numpy as np 
 import pygame
+import math 
+
 
 def play_sound(sound_file):
     pygame.mixer.init()
@@ -121,3 +123,12 @@ class Button:
             self.is_clicked = True
             return True
         return False
+    
+    
+
+def calculate_distance_from_camera(objx, objy):
+        camerax = 320
+        cameray = 480
+        distance = math.sqrt((camerax - objx)**2 + (cameray - objy)**2)
+        return distance
+        
