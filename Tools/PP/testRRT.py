@@ -1,6 +1,6 @@
 from RRTbasePY import RRTGraph
 
-def find_path_coordinates(dimensions=(750, 500), start=(50, 600), goal=(622, 93), obsdim=31, obstacles=[[250, 325], [375, 125], [375, 375], [250, 175], [500,175], [500, 325]]):
+def find_path_coordinates(prohibited_zone, dimensions=(750, 500), start=(50, 600), goal=(622, 93), obsdim=31, obstacles=[[250, 325], [375, 125], [375, 375], [250, 175], [500,175], [500, 325]] ):
     graph = RRTGraph(start, goal, dimensions, obsdim, obstacles)
     iteration = 0
 
