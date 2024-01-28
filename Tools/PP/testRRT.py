@@ -1,7 +1,7 @@
 from RRTbasePY import RRTGraph
 
-def find_path_coordinates(prohibited_zone, dimensions=(750, 500), start=(50, 600), goal=(622, 93), obsdim=31, obstacles=[[250, 325], [375, 125], [375, 375], [250, 175], [500,175], [500, 325]] ):
-    graph = RRTGraph(start, goal, dimensions, obsdim, obstacles)
+def find_path_coordinates( start=(88, 245), goal=(675, 75),  dimensions=(750, 500), obsdim=31, obstacles=[[250, 175], [250, 325], [375, 125], [375, 375], [500, 175], [500, 325], [224,206]],prohibited_zone = [0, 0, 10, 10] ):
+    graph = RRTGraph(start, goal, dimensions, obsdim, obstacles,prohibited_zone)
     iteration = 0
 
     while not graph.path_to_goal():
@@ -17,4 +17,3 @@ def find_path_coordinates(prohibited_zone, dimensions=(750, 500), start=(50, 600
 
 if __name__ == '__main__':
     path_coordinates = find_path_coordinates()
-    print("Path Coordinates:", path_coordinates)
