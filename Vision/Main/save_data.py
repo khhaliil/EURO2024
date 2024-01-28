@@ -1,6 +1,6 @@
 import cv2
 import time
-from playsound import playsound  # Import playsound library
+import playsound as playsound  # Import playsound library
 import cv2.aruco as aruco
 import numpy as np 
 import pygame

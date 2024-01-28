@@ -28,7 +28,7 @@ def detect_checker_board(image, grayImage, criteria, boardDimension):
 
     return image, ret
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(3)
 
 last_capture_time = time.time()  # Initialize last capture time
 capture_interval = 2  # Time interval between captures in seconds
