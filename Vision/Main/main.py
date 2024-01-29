@@ -33,7 +33,7 @@ save_button = Button(10, 10, 60, 30, "Save")
 mapx, mapy = 2, 3
 # MODEL ###########################################################""
 yolo_model = Model.initialize_yolo(
-    r"C:\Users\MSI\Desktop\EURO2024\Vision\Data\Model V0\runs\detect\train6\weights\best.pt")
+    r"C:\Users\MSI\Desktop\EURO2024\Vision\Data\models\weights\medium_40_epchs\weights\best.pt")
 Model.create_trackbar("Adjustments")
 #############################################################################################
 
@@ -133,13 +133,13 @@ def update_tracking_data(tag_to_track):
 
 
 ####################################################################################
-distorsion_coef = 0.967
+distorsion_coef = 0.972
 min_cluster_size=3
 
 ####################################################################################
 cap = cv2.VideoCapture(3)
 cv2.namedWindow("Trackbars")
-initial_radius_threshold = 5  # Initial value
+initial_radius_threshold = 50  # Initial value
 cv2.createTrackbar('Radius Threshold', 'Trackbars',
                    initial_radius_threshold, 150, nothing)
 cv2.createTrackbar("Marker Length", "Trackbars", 10, 20,
@@ -200,7 +200,7 @@ while True:
     launch_saving_window()
     radius_threshold = 40
     
-    #img_top_down, obstacles, centers = process_and_visualize_image(img_top_down, yolo_model, distorsion_coef,cv2.getTrackbarPos('Radius Threshold', 'Trackbars'), min_cluster_size)
+    img_top_down, obstacles, centers = process_and_visualize_image(img_top_down, yolo_model, distorsion_coef,cv2.getTrackbarPos('Radius Threshold', 'Trackbars'), min_cluster_size)
 
     cv2.imshow('Top-Down View', img_top_down)
     cv2.imshow('Marked Image', img)

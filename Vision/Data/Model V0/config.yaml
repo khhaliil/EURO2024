@@ -1,7 +1,0 @@
-path : C:\Users\MSI\Desktop\EURO2024\Vision\Data\Model V0
-train : images\train
-val : images\train
-
-names:
-  0: pot
-  1: flower

@@ -10,7 +10,7 @@ def initialize_yolo(model_path):
     return model
 
 
-def perform_detection(model, image, radius_correction_factor, threshold=0.45):
+def perform_detection(model, image, radius_correction_factor, threshold=0.47):
     results = model.predict(image)
     centers = []
 
