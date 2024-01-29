@@ -10,7 +10,7 @@ def initialize_yolo(model_path):
     return model
 
 
-def perform_detection(model, image, radius_correction_factor, threshold=0.47):
+def perform_detection(model, image, radius_correction_factor, threshold=0.49):
     results = model.predict(image)
     centers = []
 
@@ -254,7 +254,7 @@ def draw_centers_and_obstacles(image, obstacles, centers):
             content_length = len(obstacle['contents'])
 
             cv2.circle(image, (int(center_x), int(center_y)),
-                       radius, (0, 255, 0), 1)  # Draw obstacle circle
+                       radius, (0, 255, 255), 2)  # Draw obstacle circle
             text_position = (int(center_x) - radius,
                              int(center_y) + radius + 20)
 
@@ -263,7 +263,7 @@ def draw_centers_and_obstacles(image, obstacles, centers):
 
     if centers is not None:
         for (center_x, center_y), confidence, class_name in centers:
-            cv2.circle(image, (center_x, center_y), 5, (0, 0, 255), -1)
+            cv2.circle(image, (center_x, center_y), 4, (0, 0, 255), -1)
             label = f'{class_name} {confidence:.2f}'
             cv2.putText(image, label, (center_x + 10, center_y + 10),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)

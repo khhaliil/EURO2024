@@ -33,7 +33,7 @@ save_button = Button(10, 10, 60, 30, "Save")
 mapx, mapy = 2, 3
 # MODEL ###########################################################""
 yolo_model = Model.initialize_yolo(
-    r"C:\Users\MSI\Desktop\EURO2024\Vision\Data\models\weights\medium_40_epchs\weights\best.pt")
+    r"C:\Users\MSI\Desktop\EURO2024\Vision\Data\models\weights\nano_70_epchs\nano 70 epochs.pt")
 Model.create_trackbar("Adjustments")
 #############################################################################################
 
@@ -200,7 +200,7 @@ while True:
     launch_saving_window()
     radius_threshold = 40
     
-    img_top_down, obstacles, centers = process_and_visualize_image(img_top_down, yolo_model, distorsion_coef,cv2.getTrackbarPos('Radius Threshold', 'Trackbars'), min_cluster_size)
+    #img_top_down, obstacles, centers = process_and_visualize_image(img_top_down, yolo_model, distorsion_coef,cv2.getTrackbarPos('Radius Threshold', 'Trackbars'), min_cluster_size)
 
     cv2.imshow('Top-Down View', img_top_down)
     cv2.imshow('Marked Image', img)
