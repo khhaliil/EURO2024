@@ -1,0 +1,12 @@
+homography_matrix_path = r"C:\Users\MSI\Desktop\EURO2024\Tools\homography_matrix.npz"
+
+def load_homography_matrix(path):
+    try:
+        with np.load(path) as data:
+            return data['homography_matrix']
+    except KeyError:
+        print(f"'homography_matrix' not found in {path}")
+        return None
+    except IOError:
+        print(f"Could not read file: {path}")
+        return None
