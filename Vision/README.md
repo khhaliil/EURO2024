@@ -19,7 +19,7 @@ Welcome to the "Vision" repository, a pivotal component of our larger project ta
 
 #### 1. Data - Data and Annotations
 This folder is the heart of our data collection, containing rich datasets and meticulously annotated information crucial for model training.
-- **data and annotations**: Packed with datasets and corresponding annotations.
+- **data and annotations**: Packed with datasets and corresponding YOLO annotations.
   - [Task Flower Pots v1.1](./Data/data%20and%20annotations/task_flower_potsv1.1_annot_annotations_2024_01_28_17_08_46_yolo%201.1)
   - [Task Flower Pots v1](./Data/data%20and%20annotations/task_flower_potsv1_annot-2024_01_18_18_30_23-yolo%201.1)
 - **models**: Various model iterations and backups.
@@ -28,7 +28,9 @@ This folder is the heart of our data collection, containing rich datasets and me
   - [Model v1](./Data/models/Model%20v1)
   - [Model v1.1](./Data/models/Modelv1.1)
   - [Weights](./Data/models/weights)
+    -- these are the various weights ive trained , trying Nano, medium and large models.
 - [Find a Missing Label Script](./Data/find%20a%20missing%20label.py)
+    -- this is code for finding missing labels in the data 
 
 #### 2. Main - Core Application Code
 The Main folder contains the primary codebase, implementing various functionalities of our project.
