@@ -15,11 +15,11 @@
 AccelStepper RightStepper(MOTOR_INTERFACE_TYPE, Right_STEP_PIN, Right_DIR_PIN);
 AccelStepper LeftStepper(MOTOR_INTERFACE_TYPE, Left_STEP_PIN, Left_DIR_PIN);
 float PamiTargetXY_PathPlanner[5][2]={
-        {1000.0, 1000.0},
-        {0.0, 0.0},
-        {0.0, 0.0},
-        {0.0, 0.0},
-        {0.0, 0.0}
+        {1000.0, 0.0},
+        {1000.0, 0.0},
+        {1000.0, 0.0},
+        {1000.0, 0.0},
+        {1000.0, 0.0}
     };
 float PamiTargetXY[5][2];
 
@@ -138,4 +138,3 @@ void Motors_Setup()
   RightStepper.setAcceleration(100); // Set acceleration in steps per second^2
   RightStepper.setSpeed(500);
  }
-

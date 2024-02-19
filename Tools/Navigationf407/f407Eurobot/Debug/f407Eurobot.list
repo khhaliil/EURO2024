@@ -43,11 +43,11 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  19 .debug_line   0000d2ad  00000000  00000000  0004e05c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_str    000c9883  00000000  00000000  0005b309  2**0
+ 20 .debug_str    000c9884  00000000  00000000  0005b309  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_frame  00002ed8  00000000  00000000  00124b8c  2**2
+ 21 .debug_frame  00002ed8  00000000  00000000  00124b90  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 22 .debug_line_str 0000006b  00000000  00000000  00127a64  2**0
+ 22 .debug_line_str 0000006b  00000000  00000000  00127a68  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1381,7 +1381,7 @@ void Nav_vFeedbackRoutine()
  8000fd2:	bf00      	nop
  8000fd4:	f3af 8000 	nop.w
  8000fd8:	00000000 	.word	0x00000000
- 8000fdc:	4071d000 	.word	0x4071d000
+ 8000fdc:	40736000 	.word	0x40736000
  8000fe0:	54442d18 	.word	0x54442d18
  8000fe4:	400921fb 	.word	0x400921fb
  8000fe8:	40000c00 	.word	0x40000c00
@@ -3221,9 +3221,9 @@ void Nav_vTestPathStateMachine()
 
 	case Nav_Test_Idle_en :
 	{
-		Nav_TestPathState_en = Nav_Test_Forward_1000mm_en;
+		Nav_TestPathState_en = Nav_Test_Rotate_360deg_en;
  8001ef4:	4b62      	ldr	r3, [pc, #392]	; (8002080 <Nav_vTestPathStateMachine+0x1b8>)
- 8001ef6:	2202      	movs	r2, #2
+ 8001ef6:	2203      	movs	r2, #3
  8001ef8:	701a      	strb	r2, [r3, #0]
 	}break;
  8001efa:	e0a5      	b.n	8002048 <Nav_vTestPathStateMachine+0x180>
@@ -3633,10 +3633,10 @@ void Nav_vNavigatorInit()
  8002200:	46bd      	mov	sp, r7
  8002202:	f85d 7b04 	ldr.w	r7, [sp], #4
  8002206:	4770      	bx	lr
- 8002208:	240c4973 	.word	0x240c4973
- 800220c:	3fb7fe71 	.word	0x3fb7fe71
- 8002210:	ddcd1d5d 	.word	0xddcd1d5d
- 8002214:	3fb802bd 	.word	0x3fb802bd
+ 8002208:	40d3f718 	.word	0x40d3f718
+ 800220c:	3fb87714 	.word	0x3fb87714
+ 8002210:	d4d5ee40 	.word	0xd4d5ee40
+ 8002214:	3fb87be6 	.word	0x3fb87be6
  8002218:	00000000 	.word	0x00000000
  800221c:	40945000 	.word	0x40945000
  8002220:	20000318 	.word	0x20000318

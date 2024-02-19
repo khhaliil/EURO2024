@@ -4415,34 +4415,34 @@ LOAD C:/ST/STM32CubeIDE_1.13.1/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.ext
  .debug_line    0x0000000000008198     0x3702 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o
  .debug_line    0x000000000000b89a     0x1a13 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o
 
-.debug_str      0x0000000000000000    0xc9883
- .debug_str     0x0000000000000000    0xc597c ./Core/Src/NavRoutineFunctions.o
-                                      0xc5c49 (size before relaxing)
- .debug_str     0x00000000000c597c      0xa38 ./Core/Src/NavStateMachines.o
-                                      0xc63cc (size before relaxing)
- .debug_str     0x00000000000c63b4      0x44b ./Core/Src/Navigation.o
-                                      0xc696f (size before relaxing)
- .debug_str     0x00000000000c67ff      0xb37 ./Core/Src/main.o
-                                      0xc6394 (size before relaxing)
- .debug_str     0x00000000000c7336      0x666 ./Core/Src/stm32f4xx_hal_msp.o
+.debug_str      0x0000000000000000    0xc9884
+ .debug_str     0x0000000000000000    0xc597d ./Core/Src/NavRoutineFunctions.o
+                                      0xc5c4a (size before relaxing)
+ .debug_str     0x00000000000c597d      0xa38 ./Core/Src/NavStateMachines.o
+                                      0xc63cd (size before relaxing)
+ .debug_str     0x00000000000c63b5      0x44b ./Core/Src/Navigation.o
+                                      0xc6970 (size before relaxing)
+ .debug_str     0x00000000000c6800      0xb37 ./Core/Src/main.o
+                                      0xc6395 (size before relaxing)
+ .debug_str     0x00000000000c7337      0x666 ./Core/Src/stm32f4xx_hal_msp.o
                                       0xc265d (size before relaxing)
- .debug_str     0x00000000000c799c      0x100 ./Core/Src/stm32f4xx_it.o
+ .debug_str     0x00000000000c799d      0x100 ./Core/Src/stm32f4xx_it.o
                                       0xc1faf (size before relaxing)
- .debug_str     0x00000000000c7a9c       0xdb ./Core/Src/system_stm32f4xx.o
+ .debug_str     0x00000000000c7a9d       0xdb ./Core/Src/system_stm32f4xx.o
                                       0xc1b61 (size before relaxing)
- .debug_str     0x00000000000c7b77       0x34 ./Core/Startup/startup_stm32f407vgtx.o
+ .debug_str     0x00000000000c7b78       0x34 ./Core/Startup/startup_stm32f407vgtx.o
                                          0x77 (size before relaxing)
- .debug_str     0x00000000000c7bab      0x5f0 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
+ .debug_str     0x00000000000c7bac      0x5f0 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o
                                       0xc26e5 (size before relaxing)
- .debug_str     0x00000000000c819b      0x328 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
+ .debug_str     0x00000000000c819c      0x328 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.o
                                       0xc2418 (size before relaxing)
- .debug_str     0x00000000000c84c3      0x15d ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
+ .debug_str     0x00000000000c84c4      0x15d ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.o
                                       0xc1cdc (size before relaxing)
- .debug_str     0x00000000000c8620      0x233 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
+ .debug_str     0x00000000000c8621      0x233 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.o
                                       0xc1f95 (size before relaxing)
- .debug_str     0x00000000000c8853      0xc4f ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o
+ .debug_str     0x00000000000c8854      0xc4f ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.o
                                       0xc2edb (size before relaxing)
- .debug_str     0x00000000000c94a2      0x3e1 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o
+ .debug_str     0x00000000000c94a3      0x3e1 ./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.o
                                       0xc26f7 (size before relaxing)
 
 .debug_frame    0x0000000000000000     0x2ed8

@@ -957,7 +957,7 @@ void Nav_vTestPathStateMachine()
 
 	case Nav_Test_Idle_en :
 	{
-		Nav_TestPathState_en = Nav_Test_Forward_1000mm_en;
+		Nav_TestPathState_en = Nav_Test_Rotate_360deg_en;
 	}break;
 
 
