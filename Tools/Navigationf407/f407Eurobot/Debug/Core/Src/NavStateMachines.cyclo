@@ -1,0 +1,5 @@
+../Core/Src/NavStateMachines.c:163:6:Nav_vExecutePath	7
+../Core/Src/NavStateMachines.c:229:6:Nav_vGoToXYStateMachine_BOB	23
+../Core/Src/NavStateMachines.c:383:6:Nav_vTestPathIndependantTrajectoryStateMachine	53
+../Core/Src/NavStateMachines.c:667:6:Nav_vIndependantTrajectoryStateMachine	59
+../Core/Src/NavStateMachines.c:953:6:Nav_vTestPathStateMachine	14

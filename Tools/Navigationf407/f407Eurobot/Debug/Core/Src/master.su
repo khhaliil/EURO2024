@@ -1,0 +1,2 @@
+../Core/Src/master.c:29:6:MASTER_vISRoutine	8	static
+../Core/Src/master.c:120:6:MASTER_vExecuteTask	8	static
