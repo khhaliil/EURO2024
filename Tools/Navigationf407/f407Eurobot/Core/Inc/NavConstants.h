@@ -25,11 +25,11 @@
 
 
 
-#define TRACK_MM     					310.0 //285.1
+#define TRACK_MM     					304.5 //285.1
 #define WHEEL_LEFT_DIAMETER_MM  		64.0
 #define WHEEL_RIGHT_DIAMETER_MM   	    64.0
-#define WHEEL_DIAMETER_MM  				62.3//62.3  //61.1
-#define LEFT_WHEEL_GAIN					1.00077//1.0007
+#define WHEEL_DIAMETER_MM  				61.18//62.3  //61.1
+#define LEFT_WHEEL_GAIN					1.0001//1.0007
 #define ENCODER_RESOLUTION		2048.0
 
 

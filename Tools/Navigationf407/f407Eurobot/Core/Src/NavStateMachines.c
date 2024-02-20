@@ -957,7 +957,7 @@ void Nav_vTestPathStateMachine()
 
 	case Nav_Test_Idle_en :
 	{
-		Nav_TestPathState_en = Nav_Test_Rotate_360deg_en;
+		Nav_TestPathState_en = Nav_Test_Forward_1000mm_en;
 	}break;
 
 
@@ -1004,7 +1004,7 @@ void Nav_vTestPathStateMachine()
 		{
 			Nav_TrajectoryMode_en = Nav_ForwardLinearTrajectory_en;
 			Nav_MaxVelocity_d = 500 ; //400 ; //300 ;
-			Nav_Acc_d = 400 ;
+			Nav_Acc_d = 550 ;
 			Nav_TargetDistance_mm_d = 2100 ;
 			Nav_TrajectoryState_en = Nav_Trajectory_ResetVariables_en;
 		}
