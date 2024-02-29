@@ -63,15 +63,16 @@ def run(map: RRTMap,
 
 def main(args):
     dimensions = (750, 500)
-    start = (100, 250)
-    goal = (600, 250)
+    start = (100, 100)
+    goal = (675, 250)
     obsdim = 31
-    obstacles = [[275, 300], [275, 200], [375, 150], [375, 350], [475, 300], [475, 200]]
-    prohibited_zone = [275, 200, 475, 300]
+    obstacles = [[250, 175], [250, 325], [375, 125], [375, 375], [500, 175], [500, 325]]
+    prohibited_zone = [0, 0, 10, 10]
+    adv_obs = (500,450)
     pygame.init()
 
-    map = RRTMap(start, goal, dimensions, obsdim, obstacles, prohibited_zone)
-    graph = RRTGraph(start, goal, dimensions, obsdim, obstacles, prohibited_zone)
+    map = RRTMap(start, goal, dimensions, obsdim, obstacles, adv_obs, prohibited_zone)
+    graph = RRTGraph(start, goal, dimensions, obsdim, obstacles,adv_obs, prohibited_zone)
 
     msg: str = '-' * 30 + '\n'
     msg += 'Usage:\n'
@@ -85,8 +86,8 @@ def main(args):
     slow_motion: bool = args.slowmo
 
     while True:
-        map.reset(start, goal, dimensions, obsdim, obstacles, prohibited_zone)
-        graph.reset(start, goal, dimensions, obsdim, obstacles, prohibited_zone)
+        map.reset(start, goal, dimensions, obsdim, obstacles, adv_obs, prohibited_zone)
+        graph.reset(start, goal, dimensions, obsdim, obstacles, adv_obs, prohibited_zone)
         run(map, graph, goal, controlled, slow_motion, args.sleep)
 
         controlled = False

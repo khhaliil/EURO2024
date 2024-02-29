@@ -46,7 +46,7 @@ class RRTMap:
     EDGE_THICKNESS: int = 1
     MAP_WINDOW_NAME: str = 'RRT path planning' 
 
-    def __init__(self, start, goal, mapDimensions, obsdim, obstacles, prohibited_zone) -> None:
+    def __init__(self, start, goal, mapDimensions, obsdim, obstacles,adv_obs, prohibited_zone) -> None:
         """
         Initialize RRTMap with start and goal positions, map dimensions, obstacle dimensions, and the number of obstacles.
 
@@ -58,9 +58,9 @@ class RRTMap:
         - obsnum (int): Number of obstacles.
         """
         pygame.display.set_caption(self.MAP_WINDOW_NAME)
-        self.reset(start, goal, mapDimensions, obsdim, obstacles, prohibited_zone)
+        self.reset(start, goal, mapDimensions, obsdim, obstacles, adv_obs, prohibited_zone)
 
-    def reset(self, start, goal, mapDimensions, obsdim, obstacles, prohibited_zone):
+    def reset(self, start, goal, mapDimensions, obsdim, obstacles, adv_obs, prohibited_zone):
         '''
         Resets the map to its original state
         '''
@@ -72,7 +72,9 @@ class RRTMap:
         self.map.fill(self.WHITE)
 
         self.obstacles: List[List[int]] = obstacles
+        self.adv_obs = adv_obs
         self.obsdim = obsdim
+        self.ENEMY_RADIUS = 38
         self.prohibited_zone = prohibited_zone
 
     def drawMap(self):
@@ -83,8 +85,8 @@ class RRTMap:
         - obstacles (list): List of obstacle positions.
         """
 
-        pygame.draw.circle(self.map, self.GREEN, self.start, self.NODE_RAD + 10, 1)
-        pygame.draw.circle(self.map, self.GRAY, self.goal, self.NODE_RAD + 10, 1)
+        pygame.draw.circle(self.map, self.GREEN, self.start, self.NODE_RAD + 10, 0)
+        pygame.draw.circle(self.map, self.GRAY, self.goal, self.NODE_RAD + 10, 0)
         rect_width = abs(self.prohibited_zone[2] - self.prohibited_zone[0])
         rect_height = abs(self.prohibited_zone[3] - self.prohibited_zone[1])        
         rectangle = pygame.Rect(self.prohibited_zone[0], self.prohibited_zone[1], rect_width, rect_height)
@@ -102,9 +104,9 @@ class RRTMap:
         """    
 
         for node in path:
-            pygame.draw.circle(self.map, self.BLUE, node, self.NODE_RAD + 5, 0)
+            pygame.draw.circle(self.map, self.BLUE, node, self.NODE_RAD + 38, 0)
         for node in path_smoothed:
-            pygame.draw.circle(self.map, self.RED, node, self.NODE_RAD + 38, 0)
+            pygame.draw.circle(self.map, self.RED, node, self.NODE_RAD +38 , 0)
 
     def drawobs(self): 
         """
@@ -117,6 +119,7 @@ class RRTMap:
         while len(obstaclesList):
             obstacle = obstaclesList.pop(0)
             pygame.draw.circle(self.map, self.BLACK, obstacle, self.obsdim, 0)
+        pygame.draw.circle(self.map, self.BLACK, self.adv_obs, self.ENEMY_RADIUS, 0)
 
 
 class RRTGraph: 
@@ -159,16 +162,17 @@ class RRTGraph:
     - expand: Method to expand the RRT graph by adding a new node.
     - optimize_path: Method to smooth the path by removing unnecessary waypoints.
     """
-    SAFETY_DISTANCE: int = 5
+    SAFETY_DISTANCE: int = 0
     RADIUS = 38
+    ENEMY_RADIUS = 38
 
-    def __init__(self, start, goal, mapDimensions, obsdim, obstacles, prohibited_zone):
+    def __init__(self, start, goal, mapDimensions, obsdim, obstacles, adv_obs, prohibited_zone):
         """
         Initialize RRTGraph with start and goal positions, map dimensions, obstacle dimensions, and the number of obstacles.
         """
-        self.reset(start, goal, mapDimensions, obsdim, obstacles, prohibited_zone)
+        self.reset(start, goal, mapDimensions, obsdim, obstacles, adv_obs, prohibited_zone)
 
-    def reset(self, start, goal, mapDimensions, obsdim, obstacles, prohibited_zone):
+    def reset(self, start, goal, mapDimensions, obsdim, obstacles, adv_obs, prohibited_zone):
         self.start = start
         self.goal = goal
         self.found_goal = False
@@ -179,6 +183,7 @@ class RRTGraph:
         self.parent = [0]
 
         self.obstacles = obstacles
+        self.adv_obs = adv_obs
         self.obsDim = obsdim 
         self.prohibited_zone = prohibited_zone
 
@@ -274,8 +279,8 @@ class RRTGraph:
             # TODO[RS]: check here if the point is in the obstacles/prohibited area(s)
             # Basically run the sampled point through a list of "filters" that would tell you whether
             # it's a good candidate or not
-            #print('sampling envir', x, y)
-            if not (self.prohibited_zone[0] <= x <= self.prohibited_zone[2] and self.prohibited_zone[1] <= y <= self.prohibited_zone[3]):
+            print('sampling envir', x, y)
+            if not ((275 <= x + self.RADIUS <= 500 and 0 <= y + self.RADIUS <= 28) and (self.prohibited_zone[0] <= x <= self.prohibited_zone[2] and self.prohibited_zone[1] <= y <= self.prohibited_zone[3])):
                 return (x, y)
 
     def nearest(self, n: int) -> int:
@@ -309,6 +314,10 @@ class RRTGraph:
         n = self.number_of_nodes() - 1
         x = self.x[n]
         y = self.y[n]
+        distance_to_enemy = math.sqrt((x - self.adv_obs[0]) ** 2 + (y - self.adv_obs[1] ) ** 2)
+        if distance_to_enemy < (self.ENEMY_RADIUS + self.SAFETY_DISTANCE + self.RADIUS):
+            self.remove_node(n)
+            return False  
         obs = self.obstacles.copy()
         while len(obs) > 0:
             temp = obs.pop(0)
@@ -332,7 +341,17 @@ class RRTGraph:
 
         Returns:
         - crosses: True if the line segment crosses an obstacle, False otherwise.
-        """       
+        """    
+        for i in range(0, 101):
+            u = i / 100
+            x = x1 * u + x2 * (1 - u)
+            y = y1 * u + y2 * (1 - u)
+            distance = math.sqrt((float(x) - float(self.adv_obs[0])) ** 2 + (float(y) - float(self.adv_obs[1])) ** 2)
+            is_too_close_to_enemy: bool = distance < (self.ENEMY_RADIUS + self.SAFETY_DISTANCE + self.RADIUS)
+            is_in_prohibited_area: bool = (self.prohibited_zone[0] < x < self.prohibited_zone[2]) and (self.prohibited_zone[1] < y < self.prohibited_zone[3])
+            if is_too_close_to_enemy or is_in_prohibited_area:
+                return True
+
         obs = self.obstacles.copy()
         for obstacle in obs:
             # TODO[RS]: make number of steps variable depending on the distance between the two points
