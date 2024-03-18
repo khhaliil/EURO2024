@@ -1,103 +1,59 @@
 #include <AccelStepper.h>
 #include <math.h>
 
+
+
 #define MOTOR_INTERFACE_TYPE 1
 #define Right_DIR_PIN 14
 #define Right_STEP_PIN 13
-#define Wheel_Diametre 78   
+#define Wheel_Diametre 78
 #define Wheel_Perimeter M_PI * Wheel_Diametre   //=245 mm
 #define Left_DIR_PIN 4
 #define Left_STEP_PIN 2
-#define Pami_Track  135
+#define Pami_Track  131 //135
 #define STEPS_PER_REVOLUTION 200 // 200->one rotate
-
 
 AccelStepper RightStepper(MOTOR_INTERFACE_TYPE, Right_STEP_PIN, Right_DIR_PIN);
 AccelStepper LeftStepper(MOTOR_INTERFACE_TYPE, Left_STEP_PIN, Left_DIR_PIN);
 float PamiTargetXY_PathPlanner[5][2]={
-        {1000.0, 0.0},
-        {1000.0, 0.0},
-        {1000.0, 0.0},
-        {1000.0, 0.0},
-        {1000.0, 0.0}
-    };
-float PamiTargetXY[5][2];
+  {1000,0},
+  {0,0},
+  {0,0},
+  {0,0},
+  {0,0},
+};
+float Radius[5], Theta[5];
+float PamiTargetXY [5][2];
 
-float Radius[5],Theta[5];
-int steps=0;
 void setup() {
-   Serial.begin(9600);
+  Serial.begin(9600);
+  Motors_Setup();
+  delay(3500);
+  ExecuteXY();
 
-Motors_Setup();
-delay(3000);
-ExecuteXY(Radius, Theta, PamiTargetXY, PamiTargetXY_PathPlanner);
-
+  // Clear the array initially
 }
-
-
 
 void loop() {
 
-
-delay(10000);
 }
 
-
-
-int Convert_distance_mm_2_steps(float distance) {return((int)(distance*STEPS_PER_REVOLUTION)/(Wheel_Perimeter)) ;}
-float Convert_angle_rad_2_Arc(float angle) {return(angle*Pami_Track*0.5);}
-
-
-
-void PamiMoving_Steps(int StepsDesired) 
-{
-  
-    RightStepper.move(-StepsDesired);
-    LeftStepper.move(StepsDesired);
-    while (LeftStepper.isRunning() || RightStepper.isRunning())
-  
-     {
-       LeftStepper.run();
-       RightStepper.run();
+bool areNewPointsAdded() {
+  for (int i = 0; i < 5; i++) {
+    if (PamiTargetXY_PathPlanner[i][0] != 0 || PamiTargetXY_PathPlanner[i][1] != 0) {
+      return true;
     }
-  
+  }
+  return false;
 }
 
-
-
-void PamiRotating(float StepsDesired){
-  RightStepper.move(-StepsDesired);
-    LeftStepper.move(-StepsDesired);
-    while (LeftStepper.isRunning() || RightStepper.isRunning())
-  
-     {
-       LeftStepper.run();
-       RightStepper.run();
-    }
+int Convert_distance_mm_2_steps(float distance) {
+  return ((int)(distance * STEPS_PER_REVOLUTION) / (Wheel_Perimeter));
 }
 
-void PamiMoving_MM(float distance ){
-  PamiMoving_Steps(Convert_distance_mm_2_steps(distance));
-
+float Convert_angle_rad_2_Arc(float angle) {
+  return (angle * Pami_Track * 0.5);
 }
-void PamiRotating_rad(float angle){
-  PamiRotating(Convert_distance_mm_2_steps(Convert_angle_rad_2_Arc(angle)));
-}
-
-
-void Cartesian_To_Polar_Coordinates(float PamiTargetXY[5][2], float Radius[5], float Theta[5]) {
-	int i=0;
-    for (i = 0; i < 5; i++) {
-        float x = PamiTargetXY[i][0];
-        float y = PamiTargetXY[i][1];
-        Radius[i] = sqrt(x * x + y * y);
-        Theta[i] = atan2(y, x);
-         
-    }
-
-}
-
-
 void CoordiantesTreatement(float PamiTargetXY[5][2],float PamiTargetXY_PathPlanner[5][2])
 { PamiTargetXY[0][0]=PamiTargetXY_PathPlanner[0][0];
 PamiTargetXY[0][1]=PamiTargetXY_PathPlanner[0][1];
@@ -106,9 +62,8 @@ PamiTargetXY[0][1]=PamiTargetXY_PathPlanner[0][1];
   PamiTargetXY[i][1]=PamiTargetXY_PathPlanner[i][1]-PamiTargetXY_PathPlanner[i-1][1];
   } 
 }
-
-void ExecuteXY(float Radius[5],float Theta[5],float PamiTargetXY[5][2],float PamiTargetXY_PathPlanner[5][2]){
-  CoordiantesTreatement(PamiTargetXY,PamiTargetXY_PathPlanner);
+void ExecuteXY() {
+CoordiantesTreatement(PamiTargetXY,PamiTargetXY_PathPlanner);
   Cartesian_To_Polar_Coordinates(PamiTargetXY,Radius,Theta);
   int i=0;
   for (i = 0; i < 5; i++)
@@ -119,22 +74,56 @@ void ExecuteXY(float Radius[5],float Theta[5],float PamiTargetXY[5][2],float Pam
        Serial.print("Point Reached: ");
        Serial.println(i);
     }
+  memset(PamiTargetXY_PathPlanner, 0, sizeof(PamiTargetXY_PathPlanner)); // Clear the array after execution
 }
 
+void PamiMoving_Steps(int StepsDesired) {
+  RightStepper.move(-StepsDesired);
+  LeftStepper.move(StepsDesired);
+  while (LeftStepper.isRunning() || RightStepper.isRunning()) {
+    LeftStepper.run();
+    RightStepper.run();
+  }
+}
 
-void Motors_Setup()
-{
+void PamiRotating(float StepsDesired) {
+  RightStepper.move(-StepsDesired);
+  LeftStepper.move(-StepsDesired);
+  while (LeftStepper.isRunning() || RightStepper.isRunning()) {
+    LeftStepper.run();
+    RightStepper.run();
+  }
+}
+
+void PamiMoving_MM(float distance) {
+  PamiMoving_Steps(Convert_distance_mm_2_steps(distance));
+}
+
+void PamiRotating_rad(float angle) {
+  PamiRotating(Convert_distance_mm_2_steps(Convert_angle_rad_2_Arc(angle)));
+}
+
+void Cartesian_To_Polar_Coordinates(float PamiTargetXY[5][2], float Radius[5], float Theta[5]) {
+  for (int i = 0; i < 5; i++) {
+    float x = PamiTargetXY[i][0];
+    float y = PamiTargetXY[i][1];
+    Radius[i] = sqrt(x * x + y * y);
+    Theta[i] = atan2(y, x);
+  }
+}
+
+void Motors_Setup() {
   pinMode(Right_DIR_PIN, OUTPUT);
   pinMode(Right_STEP_PIN, OUTPUT);
   pinMode(Left_DIR_PIN, OUTPUT);
   pinMode(Left_STEP_PIN, OUTPUT);
 
-  // Set motor parameters
-  LeftStepper.setMaxSpeed(1000);    // Set maximum speed in steps per second
-  LeftStepper.setAcceleration(100); // Set acceleration in steps per second^2
-  LeftStepper.setSpeed(500);
+  LeftStepper.setMaxSpeed(1000);
+  LeftStepper.setAcceleration(450);
+  LeftStepper.setSpeed(600);
 
-  RightStepper.setMaxSpeed(1000);    // Set maximum speed in steps per second
-  RightStepper.setAcceleration(100); // Set acceleration in steps per second^2
-  RightStepper.setSpeed(500);
- }
+  RightStepper.setMaxSpeed(1000);
+  RightStepper.setAcceleration(450);
+  RightStepper.setSpeed(600);
+}
+
