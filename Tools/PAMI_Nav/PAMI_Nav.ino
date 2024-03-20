@@ -2,22 +2,21 @@
 #include <math.h>
 
 
-
 #define MOTOR_INTERFACE_TYPE 1
 #define Right_DIR_PIN 14
 #define Right_STEP_PIN 13
-#define Wheel_Diametre 78
+#define Wheel_Diametre 79
 #define Wheel_Perimeter M_PI * Wheel_Diametre   //=245 mm
 #define Left_DIR_PIN 4
 #define Left_STEP_PIN 2
-#define Pami_Track  131 //135
+#define Pami_Track  133 //135
 #define STEPS_PER_REVOLUTION 200 // 200->one rotate
 
 AccelStepper RightStepper(MOTOR_INTERFACE_TYPE, Right_STEP_PIN, Right_DIR_PIN);
 AccelStepper LeftStepper(MOTOR_INTERFACE_TYPE, Left_STEP_PIN, Left_DIR_PIN);
 float PamiTargetXY_PathPlanner[5][2]={
-  {1000,0},
-  {0,0},
+  {1000,1000},
+  {1500,1500},
   {0,0},
   {0,0},
   {0,0},
@@ -31,21 +30,12 @@ void setup() {
   delay(3500);
   ExecuteXY();
 
-  // Clear the array initially
 }
 
 void loop() {
 
 }
 
-bool areNewPointsAdded() {
-  for (int i = 0; i < 5; i++) {
-    if (PamiTargetXY_PathPlanner[i][0] != 0 || PamiTargetXY_PathPlanner[i][1] != 0) {
-      return true;
-    }
-  }
-  return false;
-}
 
 int Convert_distance_mm_2_steps(float distance) {
   return ((int)(distance * STEPS_PER_REVOLUTION) / (Wheel_Perimeter));
@@ -54,7 +44,10 @@ int Convert_distance_mm_2_steps(float distance) {
 float Convert_angle_rad_2_Arc(float angle) {
   return (angle * Pami_Track * 0.5);
 }
-void CoordiantesTreatement(float PamiTargetXY[5][2],float PamiTargetXY_PathPlanner[5][2])
+
+
+
+void CoordinatesTreatment(float PamiTargetXY[5][2],float PamiTargetXY_PathPlanner[5][2])
 { PamiTargetXY[0][0]=PamiTargetXY_PathPlanner[0][0];
 PamiTargetXY[0][1]=PamiTargetXY_PathPlanner[0][1];
   for(int i=1;i<5;i++)
@@ -62,9 +55,11 @@ PamiTargetXY[0][1]=PamiTargetXY_PathPlanner[0][1];
   PamiTargetXY[i][1]=PamiTargetXY_PathPlanner[i][1]-PamiTargetXY_PathPlanner[i-1][1];
   } 
 }
+
+
 void ExecuteXY() {
-CoordiantesTreatement(PamiTargetXY,PamiTargetXY_PathPlanner);
-  Cartesian_To_Polar_Coordinates(PamiTargetXY,Radius,Theta);
+CoordinatesTreatment(PamiTargetXY,PamiTargetXY_PathPlanner);
+ Cartesian_To_Polar_Coordinates(PamiTargetXY,Radius,Theta);
   int i=0;
   for (i = 0; i < 5; i++)
     {
@@ -72,9 +67,16 @@ CoordiantesTreatement(PamiTargetXY,PamiTargetXY_PathPlanner);
       PamiMoving_MM(Radius[i]);
       delay(1000);
        Serial.print("Point Reached: ");
-       Serial.println(i);
+       Serial.println(Radius[i]);
+       Serial.print("angle=  ");
+       Serial.println(Theta[i]);
+       Serial.print("x=  ");
+       Serial.println(PamiTargetXY[i][0]);
+       Serial.print("y=   ");
+       Serial.println(PamiTargetXY[i][1]);
+       Serial.print("*******************************************************: ");
     }
-  memset(PamiTargetXY_PathPlanner, 0, sizeof(PamiTargetXY_PathPlanner)); // Clear the array after execution
+   
 }
 
 void PamiMoving_Steps(int StepsDesired) {
@@ -109,7 +111,11 @@ void Cartesian_To_Polar_Coordinates(float PamiTargetXY[5][2], float Radius[5], f
     float y = PamiTargetXY[i][1];
     Radius[i] = sqrt(x * x + y * y);
     Theta[i] = atan2(y, x);
-  }
+}
+Theta[1]=Theta[1]-Theta[0];
+Theta[2]=Theta[2]-Theta[1]-Theta[0];
+Theta[3]=Theta[3]-Theta[2]-Theta[1]-Theta[0];
+Theta[4]=Theta[4]-Theta[3]-Theta[2]-Theta[1]-Theta[0];
 }
 
 void Motors_Setup() {
