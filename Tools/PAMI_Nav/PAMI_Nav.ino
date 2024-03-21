@@ -15,9 +15,9 @@
 AccelStepper RightStepper(MOTOR_INTERFACE_TYPE, Right_STEP_PIN, Right_DIR_PIN);
 AccelStepper LeftStepper(MOTOR_INTERFACE_TYPE, Left_STEP_PIN, Left_DIR_PIN);
 float PamiTargetXY_PathPlanner[5][2]={
+  {1000,0},
   {1000,1000},
-  {1500,1500},
-  {0,0},
+  {0,1000},
   {0,0},
   {0,0},
 };
@@ -69,7 +69,7 @@ CoordinatesTreatment(PamiTargetXY,PamiTargetXY_PathPlanner);
        Serial.print("Point Reached: ");
        Serial.println(Radius[i]);
        Serial.print("angle=  ");
-       Serial.println(Theta[i]);
+       Serial.println(Theta[i]*180*(1/M_PI));
        Serial.print("x=  ");
        Serial.println(PamiTargetXY[i][0]);
        Serial.print("y=   ");
@@ -112,10 +112,24 @@ void Cartesian_To_Polar_Coordinates(float PamiTargetXY[5][2], float Radius[5], f
     Radius[i] = sqrt(x * x + y * y);
     Theta[i] = atan2(y, x);
 }
-Theta[1]=Theta[1]-Theta[0];
-Theta[2]=Theta[2]-Theta[1]-Theta[0];
-Theta[3]=Theta[3]-Theta[2]-Theta[1]-Theta[0];
-Theta[4]=Theta[4]-Theta[3]-Theta[2]-Theta[1]-Theta[0];
+   for (int i = 1; i < 5; i++) {
+        int j;
+         for (j = 0; j < i; j++) {
+            Theta[i] -= Theta[j];     
+        }
+    }
+    for (int i = 1; i < 5; i++) {
+        while (Theta[i]*180*(1/M_PI) < -180) {
+            Theta[i] += 2*M_PI;
+        }
+        
+        while (Theta[i]*180*(1/M_PI) > 180) {
+            Theta[i] -= 2*M_PI;
+        }
+
+
+        }
+
 }
 
 void Motors_Setup() {
