@@ -5,13 +5,13 @@
 #define TaskPriority_is_HIGH 0
 #define X 0
 #define Y 1
-#define Core0 0
+#define Core1 0
 #define NULL_INPUT_PARAMETER NULL
 #define STACK_SIZE_BYTES 10000
 
-#define RIGHT_SENSOR_PIN 15
-#define MID_SENSOR_PIN 16
-#define LEFT_SENSOR_PIN 5
+#define RIGHT_SENSOR_PIN 18
+#define MID_SENSOR_PIN 5
+#define LEFT_SENSOR_PIN 19
 
 #define RIGHTSENSOR 0
 #define MIDSENSOR 1
@@ -20,14 +20,15 @@
 
 #define MOTOR_INTERFACE_TYPE 1
 #define Right_DIR_PIN 14
-#define Right_STEP_PIN 13
+#define Right_STEP_PIN 12
 #define Wheel_Diametre 79
 #define Wheel_Perimeter M_PI * Wheel_Diametre   //=245 mm
-#define Left_DIR_PIN 4
-#define Left_STEP_PIN 2
+#define Left_DIR_PIN 26
+#define Left_STEP_PIN 32
 #define Pami_Track  133 //135
 #define STEPS_PER_REVOLUTION 200 // 200->one rotate
 bool Obstacle_FLAG_BOOL=true;
+ bool Controlled_FLAG=true,Prev_Obstacle_FLAG_BOOL=true ;
 TaskHandle_t ObjectDetect;
 AccelStepper RightStepper(MOTOR_INTERFACE_TYPE, Right_STEP_PIN, Right_DIR_PIN);
 AccelStepper LeftStepper(MOTOR_INTERFACE_TYPE, Left_STEP_PIN, Left_DIR_PIN);
@@ -39,7 +40,7 @@ void setup() {
     Coordinates_Rank=3;
  
  
-  xTaskCreatePinnedToCore(ObjectDetection ,"ObjectDetect", STACK_SIZE_BYTES, NULL_INPUT_PARAMETER, TaskPriority_is_HIGH, &ObjectDetect, Core0);  //&ObjectDetect,        Task handle
+  xTaskCreatePinnedToCore(ObjectDetection ,"ObjectDetect", STACK_SIZE_BYTES, NULL_INPUT_PARAMETER, TaskPriority_is_HIGH, &ObjectDetect, Core1);  //&ObjectDetect,        Task handle
   float **PamiTargetXY_PathPlanner = new float*[Coordinates_Rank];
   float **PamiTargetXY = new float*[Coordinates_Rank];
   float *Radius= new float[Coordinates_Rank];
@@ -57,8 +58,8 @@ Motors_Setup();
   PamiTargetXY_PathPlanner[0][X]=1275.0;
   PamiTargetXY_PathPlanner[0][Y]=75.0;
 
-   PamiTargetXY_PathPlanner[1][X]=3500.0;
-  PamiTargetXY_PathPlanner[1][Y]=75;
+   PamiTargetXY_PathPlanner[1][X]=1275.0;
+  PamiTargetXY_PathPlanner[1][Y]=1200;
 
      PamiTargetXY_PathPlanner[2][X]=516.0;
   PamiTargetXY_PathPlanner[2][Y]=1416;
@@ -66,8 +67,8 @@ Motors_Setup();
   //   PamiTargetXY_PathPlanner[3][X]=224.0;
   //PamiTargetXY_PathPlanner[3][Y]=1772;
   
-  Theta[0]=0;
- delay(3000);
+  Theta[0]=M_PI/2;
+ delay(3500);
   
   
  ExecuteXY(PamiTargetXY,PamiTargetXY_PathPlanner,Radius,Theta);
@@ -110,9 +111,9 @@ CoordinatesTreatment(PamiTargetXY,PamiTargetXY_PathPlanner);
       PamiRotating_rad(Theta[i]);
       PamiMoving_MM(Radius[i]);
       delay(1000);
-       //Serial.print("Point Reached: ");
-       //Serial.println(Radius[i]);
-       /*Serial.print("angle=  ");
+      /* Serial.print("Point Reached: ");
+       Serial.println(Radius[i]);
+       Serial.print("angle=  ");
        Serial.println(Theta[i]*180*(1/M_PI));
        Serial.print("x=  ");
        Serial.println(PamiTargetXY[i][0]);
@@ -127,7 +128,7 @@ void PamiMoving_Steps(int StepsDesired) {
   RightStepper.move(-StepsDesired);
   LeftStepper.move(StepsDesired);
 
-  while ((LeftStepper.isRunning() || RightStepper.isRunning())&& Obstacle_FLAG_BOOL )  {
+  while ((LeftStepper.isRunning() || RightStepper.isRunning())&& Controlled_FLAG )  {
     LeftStepper.run();
     RightStepper.run();
   }
@@ -136,7 +137,7 @@ void PamiMoving_Steps(int StepsDesired) {
 void PamiRotating(float StepsDesired) {
   RightStepper.move(-StepsDesired);
   LeftStepper.move(-StepsDesired);
-  while ((LeftStepper.isRunning() || RightStepper.isRunning())&& Obstacle_FLAG_BOOL )  {
+  while ((LeftStepper.isRunning() || RightStepper.isRunning())&& Controlled_FLAG )  {
     LeftStepper.run();
     RightStepper.run();
   }
@@ -198,17 +199,16 @@ void ObjectDetection(void *pvParameters) {
    pinMode(RIGHT_SENSOR_PIN,INPUT);
    pinMode(LEFT_SENSOR_PIN,INPUT);
    pinMode(MID_SENSOR_PIN,INPUT);
-  vTaskDelay(4500 / portTICK_PERIOD_MS);
+  
   while (1) {
-     //vTaskDelay(1000 / portTICK_PERIOD_MS);
-     
   Obstacle_FLAG[RIGHTSENSOR] = digitalRead(RIGHT_SENSOR_PIN);
   Obstacle_FLAG[LEFTSENSOR] = digitalRead(LEFT_SENSOR_PIN);
   Obstacle_FLAG[MIDSENSOR] = digitalRead(MID_SENSOR_PIN);
- // Obstacle_FLAG_BOOL= Obstacle_FLAG[RIGHTSENSOR]& Obstacle_FLAG[LEFTSENSOR]  &Obstacle_FLAG[MIDSENSOR];
-  Obstacle_FLAG_BOOL=false;
+  Obstacle_FLAG_BOOL= Obstacle_FLAG[RIGHTSENSOR]& Obstacle_FLAG[LEFTSENSOR]  &Obstacle_FLAG[MIDSENSOR];
    Serial.print("Obstacle_FLAG_BOOL= ");
  Serial.println(Obstacle_FLAG_BOOL);
+ Controlled_FLAG=Obstacle_FLAG_BOOL|Prev_Obstacle_FLAG_BOOL;
+Prev_Obstacle_FLAG_BOOL=Obstacle_FLAG_BOOL;
       
     vTaskDelay(2000 / portTICK_PERIOD_MS); // Delay for 2 seconds
   }
