@@ -131,6 +131,7 @@ void PamiMoving_Steps(int StepsDesired) {
   while ((LeftStepper.isRunning() || RightStepper.isRunning())&& Controlled_FLAG )  {
     LeftStepper.run();
     RightStepper.run();
+  
   }
 }
 
@@ -209,7 +210,11 @@ void ObjectDetection(void *pvParameters) {
  Serial.println(Obstacle_FLAG_BOOL);
  Controlled_FLAG=Obstacle_FLAG_BOOL|Prev_Obstacle_FLAG_BOOL;
 Prev_Obstacle_FLAG_BOOL=Obstacle_FLAG_BOOL;
+if (!Controlled_FLAG){
+  delay(1000);
+  
+}
       
-    vTaskDelay(2000 / portTICK_PERIOD_MS); // Delay for 2 seconds
+    vTaskDelay(50 / portTICK_PERIOD_MS); // Delay for 2 seconds
   }
 }
